@@ -11,7 +11,8 @@ export default function HomeScreen() {
 
       <TouchableOpacity 
         style={styles.button}
-        >
+        onPress={() => router.push("/about")} // Navigate to the About page
+      >
         <Text style={styles.buttonText}>Go to About Page</Text>
       </TouchableOpacity>
     </View>
