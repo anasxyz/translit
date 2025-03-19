@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons"; // Import Ionicons for the back arrow
+import SettingsIcon from "../components/SettingsIcon"; // Import the SettingsIcon
 
 export default function AboutScreen() {
   const router = useRouter();

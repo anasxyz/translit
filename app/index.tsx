@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
+import SettingsIcon from "../components/SettingsIcon"; // Import the SettingsIcon
 
 export default function HomeScreen() {
   const router = useRouter();
