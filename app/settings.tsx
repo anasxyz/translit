@@ -1,15 +1,18 @@
 // app/settings.tsx
 import { View, Text, StyleSheet } from "react-native";
 import BackButton from "../components/BackButton"; // Import the BackButton component
+import GlobalWrapper from "@/components/GlobalWrapper";
 
 export default function SettingsPage() {
   return (
-    <View style={styles.container}>
-        <BackButton /> {/* Display the Back Button */}
+    <GlobalWrapper>
+        <View style={styles.container}>
+            <BackButton /> {/* Display the Back Button */}
 
-      <Text style={styles.title}>Settings Page</Text>
-      <Text style={styles.subtitle}>Here you can modify your settings.</Text>
-    </View>
+        <Text style={styles.title}>Settings Page</Text>
+        <Text style={styles.subtitle}>Here you can modify your settings.</Text>
+        </View>
+    </GlobalWrapper>
   );
 }
 
@@ -18,7 +21,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#f5f5f5",
   },
   title: {
     fontSize: 24,
