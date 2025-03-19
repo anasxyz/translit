@@ -10,13 +10,15 @@ export default function SettingsIcon() {
     <TouchableOpacity
       style={{
         position: "absolute",
-        top: 25,
-        right: 25,
+        top: 25, // Adjust for better visibility
+        left: 25,
         zIndex: 10, // Ensure it's above other elements
       }}
-      onPress={() => router.push("/settings")} // Navigate to the settings page
+      onPress={() => router.back()} // Navigate to previous screen
     >
-      <Ionicons name="settings" size={24} color="black" />
+      <Ionicons name="arrow-back" size={24} color="black" />
     </TouchableOpacity>
   );
 }
+
+

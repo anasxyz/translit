@@ -7,6 +7,8 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
+        <SettingsIcon /> {/* Display the Settings Icon */}
+
       <Text style={styles.title}>Welcome to My Expo App</Text>
       <Text style={styles.subtitle}>This is your homepage</Text>
 

@@ -2,13 +2,16 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons"; // Import Ionicons for the back arrow
 import SettingsIcon from "../components/SettingsIcon"; // Import the SettingsIcon
+import BackButton from "../components/BackButton"; // Import the BackButton component
 
 export default function AboutScreen() {
   const router = useRouter();
 
   return (
     <View style={styles.container}>
-      {/* Back Button */}
+        <SettingsIcon /> {/* Display the Settings Icon */}
+        <BackButton /> {/* Display the Back Button */}
+        
       <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
         <Ionicons name="arrow-back" size={24} color="black" />
       </TouchableOpacity>
