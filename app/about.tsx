@@ -28,8 +28,8 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: "absolute",
-    top: 40, // Adjust for better visibility
-    left: 20,
+    top: 25, // Adjust for better visibility
+    left: 25,
     zIndex: 10, // Ensure it's above other elements
   },
   title: {
