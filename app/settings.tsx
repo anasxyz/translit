@@ -7,7 +7,7 @@ export default function SettingsPage() {
   return (
     <GlobalWrapper>
         <View style={styles.container}>
-            <BackButton /> {/* Display the Back Button */}
+            <BackButton />
 
         <Text style={styles.title}>Settings Page</Text>
         <Text style={styles.subtitle}>Here you can modify your settings.</Text>

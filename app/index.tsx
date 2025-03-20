@@ -9,14 +9,14 @@ export default function HomeScreen() {
   return (
     <GlobalWrapper>
         <View style={styles.container}>
-            <SettingsIcon /> {/* Display the Settings Icon */}
+            <SettingsIcon />
 
         <Text style={styles.title}>Welcome to My Expo App</Text>
         <Text style={styles.subtitle}>This is your homepage</Text>
 
         <TouchableOpacity 
             style={styles.button}
-            onPress={() => router.push("/about")} // Navigate to the About page
+            onPress={() => router.push("/about")}
         >
             <Text style={styles.buttonText}>Go to About Page</Text>
         </TouchableOpacity>

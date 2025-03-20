@@ -6,7 +6,7 @@ import { View, StyleSheet } from "react-native";
 export default function GlobalWrapper({ children }: { children: React.ReactNode }) {
   return (
     <View style={styles.container}>
-      {children} {/* Render the child content (pages) inside the wrapper */}
+      {children}
     </View>
   );
 }
@@ -14,6 +14,6 @@ export default function GlobalWrapper({ children }: { children: React.ReactNode 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#248eab", // Default background color
+    backgroundColor: "#36bee3", // Default background color
   },
 });
