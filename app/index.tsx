@@ -1,8 +1,8 @@
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform, Keyboard } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform, Keyboard, Alert } from "react-native";
 import { useState, useEffect } from "react";
 import { useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
-import { Picker } from "@react-native-picker/picker"; // Import Picker for dropdowns
+import { Ionicons } from "@expo/vector-icons"; // Changed to Ionicons
+import DropDownPicker from 'react-native-dropdown-picker'; // Import custom dropdown
 import SettingsIcon from "../components/SettingsIcon";
 import GlobalWrapper from "../components/GlobalWrapper";
 
@@ -12,6 +12,8 @@ export default function HomeScreen() {
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   const [sourceLanguage, setSourceLanguage] = useState("English"); // Default source language
   const [targetLanguage, setTargetLanguage] = useState("German"); // Default target language
+  const [openSource, setOpenSource] = useState(false); // State to open/close dropdown
+  const [openTarget, setOpenTarget] = useState(false); // State to open/close dropdown
 
   useEffect(() => {
     const showSubscription = Keyboard.addListener("keyboardDidShow", () => setIsKeyboardOpen(true));
@@ -22,6 +24,16 @@ export default function HomeScreen() {
       hideSubscription.remove();
     };
   }, []);
+
+  const handleTranslatePress = () => {
+    if (inputText.trim() === "") {
+      // Display an alert if inputText is empty
+      Alert.alert("Input required", "Please enter text to translate from.");
+    } else {
+      // Proceed to the results page if text is provided
+      router.push({ pathname: "/result", params: { text: encodeURIComponent(inputText) } });
+    }
+  };
 
   return (
     <GlobalWrapper>
@@ -34,35 +46,49 @@ export default function HomeScreen() {
           {/* Language selection area moved to the right */}
           <View style={styles.languageSelectContainer}>
             <View style={styles.pickerWrapper}>
-                <Picker
-                selectedValue={sourceLanguage}
-                style={styles.picker}
-                onValueChange={(itemValue) => setSourceLanguage(itemValue)}
-                >
-                <Picker.Item label="English" value="English" />
-                <Picker.Item label="Spanish" value="Spanish" />
-                <Picker.Item label="French" value="French" />
-                <Picker.Item label="Chinese" value="Chinese" />
-                {/* Add more languages as needed */}
-                </Picker>
-                <Ionicons name="caret-down" size={24} style={styles.pickerArrow} />
+              {/* Custom dropdown for source language */}
+              <DropDownPicker
+                open={openSource}
+                value={sourceLanguage}
+                items={[
+                  { label: 'English', value: 'English' },
+                  { label: 'Spanish', value: 'Spanish' },
+                  { label: 'French', value: 'French' },
+                  { label: 'Chinese', value: 'Chinese' },
+                  // Add more languages as needed
+                ]}
+                setOpen={setOpenSource}
+                setValue={setSourceLanguage}
+                style={styles.dropdown}
+                textStyle={styles.dropdownText}
+                labelStyle={{ color: "#fff" }} // Set dropdown menu text color to black
+                placeholder="Select Source Language"
+                placeholderStyle={styles.placeholderText}
+              />
             </View>
             <Text style={styles.languageText}>to</Text>
             <View style={styles.pickerWrapper}>
-                <Picker
-                selectedValue={targetLanguage}
-                style={styles.picker}
-                onValueChange={(itemValue) => setTargetLanguage(itemValue)}
-                >
-                <Picker.Item label="German" value="German" />
-                <Picker.Item label="Italian" value="Italian" />
-                <Picker.Item label="Portuguese" value="Portuguese" />
-                <Picker.Item label="Japanese" value="Japanese" />
-                {/* Add more languages as needed */}
-                </Picker>
-                <Ionicons name="caret-down" size={24} style={styles.pickerArrow} />
+              {/* Custom dropdown for target language */}
+              <DropDownPicker
+                open={openTarget}
+                value={targetLanguage}
+                items={[
+                  { label: 'German', value: 'German' },
+                  { label: 'Italian', value: 'Italian' },
+                  { label: 'Portuguese', value: 'Portuguese' },
+                  { label: 'Japanese', value: 'Japanese' },
+                  // Add more languages as needed
+                ]}
+                setOpen={setOpenTarget}
+                setValue={setTargetLanguage}
+                style={styles.dropdown}
+                textStyle={styles.dropdownText}
+                labelStyle={{ color: "#fff" }} // Set dropdown menu text color to black
+                placeholder="Select Target Language"
+                placeholderStyle={styles.placeholderText}
+              />
             </View>
-            </View>
+          </View>
           <SettingsIcon />
         </View>
 
@@ -82,15 +108,15 @@ export default function HomeScreen() {
         {/* Translate Button */}
         <TouchableOpacity
           style={styles.translateButton}
-          onPress={() => router.push({ pathname: "/result", params: { text: encodeURIComponent(inputText) } })}
+          onPress={handleTranslatePress} // Handle translation on press
         >
           <Text style={styles.translateButtonText}>Translate</Text>
         </TouchableOpacity>
 
         {/* Camera & Mic Icons */}
         <View style={styles.iconContainer}>
-          <Ionicons name="camera" size={30} color="white" />
-          <Ionicons name="mic" size={30} color="white" />
+          <Ionicons name="camera" size={32} color="white" />
+          <Ionicons name="mic" size={32} color="white" />
         </View>
 
         {/* Hide history when keyboard is open */}
@@ -138,27 +164,39 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-end", // Align the language dropdowns to the right
-  },
-  picker: {
-    height: 50,
-    width: 150, // Increase the width to allow the full language name
-    color: "#fff",
-    marginRight: 0, // Remove extra margin from the right
+    marginLeft: 0, // Push the container to the right
   },
   pickerWrapper: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
+    width: 160, // Shrink the width of the picker wrapper
   },
-  pickerArrow: {
-    position: "absolute",
-    right: 10, // Align the arrow to the right
-    color: "#fff", // Make the arrow white
+  dropdown: {
+    height: 50,
+    width: 150, // Set width for dropdown
+    backgroundColor: "rgba(255, 255, 255, 0.3)", // Set background color to match design
+    borderRadius: 5,
+    marginRight: 10, // Add margin to space out the items
+  },
+  dropdownList: {
+    backgroundColor: "#3b9eff", // Background of the dropdown list
+    borderRadius: 5,
+  },
+  dropdownText: {
+    color: "#000", // Color for the dropdown text
+    fontSize: 18,
   },
   languageText: {
     color: "#fff",
-    fontSize: 16,
+    fontSize: 18,
     marginHorizontal: 5, // Space between source and target language
+    left: 5,
+    display: "none",
+  },
+  placeholderText: {
+    color: "#fff",
+    fontSize: 18,
   },
   translateButton: {
     backgroundColor: "#fff",
