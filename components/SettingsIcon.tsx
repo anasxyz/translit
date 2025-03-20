@@ -1,6 +1,5 @@
-// components/SettingsIcon.tsx
 import { TouchableOpacity } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons"; // Import MaterialIcons
 import { useRouter } from "expo-router";
 
 export default function SettingsIcon() {
@@ -16,7 +15,7 @@ export default function SettingsIcon() {
       }}
       onPress={() => router.push("/settings")} // Navigate to the settings page
     >
-      <Ionicons name="settings-outline" size={24} color="white" />
+      <MaterialIcons name="settings" size={24} color="white" />
     </TouchableOpacity>
   );
 }

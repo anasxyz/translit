@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
   },
   languageText: {
     color: "#fff",
-    fontSize: 18,
+    fontSize: 16,
     marginHorizontal: 5, // Space between source and target language
   },
   translateButton: {
