@@ -68,12 +68,16 @@ export default function HomeScreen() {
 
         {/* Text Input Area */}
         <TextInput
-          style={styles.textInput}
-          placeholder="Enter text"
-          placeholderTextColor="#fff"
-          value={inputText}
-          onChangeText={setInputText}
+            style={styles.textInput}
+            placeholder="Enter text"
+            placeholderTextColor="#fff"
+            value={inputText}
+            onChangeText={setInputText}
+            multiline={true} // Enable multiline text input
+            textAlignVertical="top" // Align the text to the top of the input area
+            numberOfLines={12}
         />
+
 
         {/* Translate Button */}
         <TouchableOpacity
@@ -163,6 +167,8 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignSelf: "center",
     marginBottom: 20,
+    bottom: 0,
+    top: 20,
   },
   translateButtonText: {
     color: "#3b9eff",
@@ -172,8 +178,10 @@ const styles = StyleSheet.create({
   iconContainer: {
     flexDirection: "row",
     justifyContent: "center",
-    gap: 40,
+    gap: 140,
     marginBottom: 30,
+    bottom: 0,
+    top: 30,
   },
   historyContainer: {
     backgroundColor: "#fff",
@@ -218,5 +226,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "#fff",
     marginBottom: 20,
+    height: 300, // Set a fixed height for the TextInput
   },
 });
