@@ -2,6 +2,7 @@ import { View, Text, StyleSheet, TouchableOpacity, TextInput, KeyboardAvoidingVi
 import { useState, useEffect } from "react";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { Picker } from "@react-native-picker/picker"; // Import Picker for dropdowns
 import SettingsIcon from "../components/SettingsIcon";
 import GlobalWrapper from "../components/GlobalWrapper";
 
@@ -9,6 +10,8 @@ export default function HomeScreen() {
   const router = useRouter();
   const [inputText, setInputText] = useState("");
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
+  const [sourceLanguage, setSourceLanguage] = useState("English"); // Default source language
+  const [targetLanguage, setTargetLanguage] = useState("German"); // Default target language
 
   useEffect(() => {
     const showSubscription = Keyboard.addListener("keyboardDidShow", () => setIsKeyboardOpen(true));
@@ -28,8 +31,32 @@ export default function HomeScreen() {
       >
         {/* Header with Language Selection and Settings Icon */}
         <View style={styles.header}>
-          <Text style={styles.language}>English ▼</Text>
-          <Text style={styles.language}>to German ▼</Text>
+          {/* Language selection area moved to the right */}
+          <View style={styles.languageSelectContainer}>
+            <Picker
+              selectedValue={sourceLanguage}
+              style={styles.picker}
+              onValueChange={(itemValue) => setSourceLanguage(itemValue)}
+            >
+              <Picker.Item label="English" value="English" />
+              <Picker.Item label="Spanish" value="Spanish" />
+              <Picker.Item label="French" value="French" />
+              <Picker.Item label="Chinese" value="Chinese" />
+              {/* Add more languages as needed */}
+            </Picker>
+            <Text style={styles.languageText}>to</Text>
+            <Picker
+              selectedValue={targetLanguage}
+              style={styles.picker}
+              onValueChange={(itemValue) => setTargetLanguage(itemValue)}
+            >
+              <Picker.Item label="German" value="German" />
+              <Picker.Item label="Italian" value="Italian" />
+              <Picker.Item label="Portuguese" value="Portuguese" />
+              <Picker.Item label="Japanese" value="Japanese" />
+              {/* Add more languages as needed */}
+            </Picker>
+          </View>
           <SettingsIcon />
         </View>
 
@@ -60,25 +87,25 @@ export default function HomeScreen() {
         {!isKeyboardOpen && (
           <View style={styles.historyContainer}>
             <View style={styles.historyHeader}>
-                <Text style={styles.historyTitle}>History</Text>
-                <Text style={styles.historyMore}>
+              <Text style={styles.historyTitle}>History</Text>
+              <Text style={styles.historyMore}>
                 more <Ionicons name="caret-forward-outline" />
-                </Text>
+              </Text>
             </View>
-            
+
             <View style={styles.historyItem}>
-                <Text style={styles.historyText}>早上好</Text>
-                <Text style={styles.historyTranslation}>Good Morning</Text>
-            </View>
-            <View style={styles.historyItem}>
-                <Text style={styles.historyText}>isso é loucura</Text>
-                <Text style={styles.historyTranslation}>That's crazy</Text>
+              <Text style={styles.historyText}>早上好</Text>
+              <Text style={styles.historyTranslation}>Good Morning</Text>
             </View>
             <View style={styles.historyItem}>
-                <Text style={styles.historyText}>aku perlu membeli cangkir biru</Text>
-                <Text style={styles.historyTranslation}>I need to buy a blue cup</Text>
+              <Text style={styles.historyText}>isso é loucura</Text>
+              <Text style={styles.historyTranslation}>That's crazy</Text>
             </View>
-           </View>
+            <View style={styles.historyItem}>
+              <Text style={styles.historyText}>aku perlu membeli cangkir biru</Text>
+              <Text style={styles.historyTranslation}>I need to buy a blue cup</Text>
+            </View>
+          </View>
         )}
       </KeyboardAvoidingView>
     </GlobalWrapper>
@@ -97,18 +124,20 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 30,
   },
-  language: {
-    fontSize: 18,
-    fontWeight: "bold",
+  languageSelectContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-end", // Align the language dropdowns to the right
+  },
+  picker: {
+    height: 50,
+    width: 120, // Set width for dropdowns
     color: "#fff",
   },
-  textInput: {
-    backgroundColor: "rgba(255, 255, 255, 0.3)",
-    borderRadius: 10,
-    padding: 15,
-    fontSize: 18,
+  languageText: {
     color: "#fff",
-    marginBottom: 20,
+    fontSize: 18,
+    marginHorizontal: 10, // Space between source and target language
   },
   translateButton: {
     backgroundColor: "#fff",
@@ -138,17 +167,20 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    flexDirection: "column", // Keep items stacked vertically
   },
   historyHeader: {
-    flexDirection: "row", // Items will be positioned horizontally
-    justifyContent: "space-between", // Space between the title and 'more'
-    alignItems: "center", // Align items vertically in the center
-    marginBottom: 20, // Add space below the header
+    flexDirection: "row",
+    justifyContent: "space-between", // Align History title and 'more' to opposite sides
+    alignItems: "center",
+    marginBottom: 20,
   },
   historyTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "bold",
+  },
+  historyMore: {
+    color: "#007bff",
+    fontSize: 16,
   },
   historyItem: {
     marginBottom: 20,
@@ -162,8 +194,12 @@ const styles = StyleSheet.create({
     color: "#007bff",
     fontWeight: "bold",
   },
-  historyMore: {
-    color: "#007bff",
-    fontSize: 16,
+  textInput: {
+    backgroundColor: "rgba(255, 255, 255, 0.3)",
+    borderRadius: 10,
+    padding: 15,
+    fontSize: 18,
+    color: "#fff",
+    marginBottom: 20,
   },
 });
