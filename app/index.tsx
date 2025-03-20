@@ -1,35 +1,83 @@
-import { View, Text, StyleSheet, TouchableOpacity, TextInput } from "react-native";
-import { useState } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform, Keyboard } from "react-native";
+import { useState, useEffect } from "react";
 import { useRouter } from "expo-router";
-import SettingsIcon from "../components/SettingsIcon"; // Import the SettingsIcon
-import GlobalWrapper from "../components/GlobalWrapper"; // Import GlobalWrapper
+import { Ionicons } from "@expo/vector-icons";
+import SettingsIcon from "../components/SettingsIcon";
+import GlobalWrapper from "../components/GlobalWrapper";
 
 export default function HomeScreen() {
   const router = useRouter();
   const [inputText, setInputText] = useState("");
+  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
+
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener("keyboardDidShow", () => setIsKeyboardOpen(true));
+    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => setIsKeyboardOpen(false));
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
 
   return (
     <GlobalWrapper>
-        <View style={styles.container}>
-            <SettingsIcon />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.container}
+      >
+        {/* Header with Language Selection and Settings Icon */}
+        <View style={styles.header}>
+          <Text style={styles.language}>English ▼</Text>
+          <Text style={styles.language}>to German ▼</Text>
+          <SettingsIcon />
+        </View>
 
-        <Text style={styles.title}>Homepage</Text>
-        <Text style={styles.subtitle}>This is the homepage</Text>
-
-        <TextInput 
-          style={styles.input}
-          placeholder="Enter some text"
+        {/* Text Input Area */}
+        <TextInput
+          style={styles.textInput}
+          placeholder="Enter text"
+          placeholderTextColor="#fff"
           value={inputText}
           onChangeText={setInputText}
         />
 
-        <TouchableOpacity 
-            style={styles.button}
-            onPress={() => router.push({ pathname: "/result", params: { text: encodeURIComponent(inputText) } })}
+        {/* Translate Button */}
+        <TouchableOpacity
+          style={styles.translateButton}
+          onPress={() => router.push({ pathname: "/result", params: { text: encodeURIComponent(inputText) } })}
         >
-            <Text style={styles.buttonText}>Translate</Text>
+          <Text style={styles.translateButtonText}>Translate</Text>
         </TouchableOpacity>
+
+        {/* Camera & Mic Icons */}
+        <View style={styles.iconContainer}>
+          <Ionicons name="camera" size={30} color="white" />
+          <Ionicons name="mic" size={30} color="white" />
         </View>
+
+        {/* Hide history when keyboard is open */}
+        {!isKeyboardOpen && (
+          <View style={styles.historyContainer}>
+            <Text style={styles.historyTitle}>History</Text>
+            <View style={styles.historyItem}>
+              <Text style={styles.historyText}>早上好</Text>
+              <Text style={styles.historyTranslation}>Good Morning</Text>
+            </View>
+            <View style={styles.historyItem}>
+              <Text style={styles.historyText}>isso é loucura</Text>
+              <Text style={styles.historyTranslation}>That's crazy</Text>
+            </View>
+            <View style={styles.historyItem}>
+              <Text style={styles.historyText}>aku perlu membeli cangkir biru</Text>
+              <Text style={styles.historyTranslation}>I need to buy a blue cup</Text>
+            </View>
+            <Text style={styles.historyMore}>more
+                <Ionicons name="caret-forward-outline"></Ionicons>
+            </Text>
+          </View>
+        )}
+      </KeyboardAvoidingView>
     </GlobalWrapper>
   );
 }
@@ -37,37 +85,78 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
+    backgroundColor: "#3b9eff",
+    padding: 20,
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
+    marginBottom: 30,
   },
-  title: {
-    fontSize: 24,
+  language: {
+    fontSize: 18,
     fontWeight: "bold",
-    color: "#333",
-    marginBottom: 10,
+    color: "#fff",
   },
-  subtitle: {
-    fontSize: 16,
-    color: "#666",
+  textInput: {
+    backgroundColor: "rgba(255, 255, 255, 0.3)",
+    borderRadius: 10,
+    padding: 15,
+    fontSize: 18,
+    color: "#fff",
     marginBottom: 20,
   },
-  input: {
-    width: "80%",
-    padding: 10,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
-    marginBottom: 15,
+  translateButton: {
+    backgroundColor: "#fff",
+    paddingVertical: 12,
+    paddingHorizontal: 25,
+    borderRadius: 20,
+    alignSelf: "center",
+    marginBottom: 20,
   },
-  button: {
-    backgroundColor: "#007bff",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-    margin: 5,
+  translateButtonText: {
+    color: "#3b9eff",
+    fontSize: 18,
+    fontWeight: "bold",
   },
-  buttonText: {
-    color: "#fff",
+  iconContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: 40,
+    marginBottom: 30,
+  },
+  historyContainer: {
+    backgroundColor: "#fff",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 20,
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
+  historyTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  historyItem: {
+    marginBottom: 10,
+  },
+  historyText: {
+    fontSize: 16,
+    color: "#666",
+  },
+  historyTranslation: {
+    fontSize: 16,
+    color: "#007bff",
+    fontWeight: "bold",
+  },
+  historyMore: {
+    color: "#007bff",
+    textAlign: "right",
+    marginTop: 10,
     fontSize: 16,
   },
 });
