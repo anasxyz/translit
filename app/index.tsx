@@ -226,6 +226,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "#fff",
     marginBottom: 20,
-    height: 300, // Set a fixed height for the TextInput
+    height: 305, // Set a fixed height for the TextInput
   },
 });
