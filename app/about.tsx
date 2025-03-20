@@ -11,8 +11,8 @@ export default function AboutScreen() {
   return (
     <GlobalWrapper>
         <View style={styles.container}>
-            <SettingsIcon /> {/* Display the Settings Icon */}
-            <BackButton /> {/* Display the Back Button */}
+            <SettingsIcon />
+            <BackButton />
             
         <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
             <Ionicons name="arrow-back" size={24} color="black" />
@@ -34,9 +34,9 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: "absolute",
-    top: 25, // Adjust for better visibility
+    top: 25,
     left: 25,
-    zIndex: 10, // Ensure it's above other elements
+    zIndex: 10,
   },
   title: {
     fontSize: 24,
