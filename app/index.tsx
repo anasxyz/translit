@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
   languageText: {
     color: "#fff",
     fontSize: 18,
-    marginHorizontal: 10, // Space between source and target language
+    marginHorizontal: 0, // Space between source and target language
   },
   translateButton: {
     backgroundColor: "#fff",
@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   historyTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "bold",
   },
   historyMore: {

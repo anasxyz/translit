@@ -10,8 +10,8 @@ export default function SettingsIcon() {
     <TouchableOpacity
       style={{
         position: "absolute",
-        top: 25,
-        right: 25,
+        top: 15,
+        right: 10,
         zIndex: 10, // Ensure it's above other elements
       }}
       onPress={() => router.push("/settings")} // Navigate to the settings page
