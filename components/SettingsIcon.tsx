@@ -16,7 +16,7 @@ export default function SettingsIcon() {
       }}
       onPress={() => router.push("/settings")} // Navigate to the settings page
     >
-      <Ionicons name="settings" size={24} color="black" />
+      <Ionicons name="settings-outline" size={24} color="white" />
     </TouchableOpacity>
   );
 }

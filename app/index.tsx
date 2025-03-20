@@ -59,23 +59,26 @@ export default function HomeScreen() {
         {/* Hide history when keyboard is open */}
         {!isKeyboardOpen && (
           <View style={styles.historyContainer}>
-            <Text style={styles.historyTitle}>History</Text>
+            <View style={styles.historyHeader}>
+                <Text style={styles.historyTitle}>History</Text>
+                <Text style={styles.historyMore}>
+                more <Ionicons name="caret-forward-outline" />
+                </Text>
+            </View>
+            
             <View style={styles.historyItem}>
-              <Text style={styles.historyText}>早上好</Text>
-              <Text style={styles.historyTranslation}>Good Morning</Text>
+                <Text style={styles.historyText}>早上好</Text>
+                <Text style={styles.historyTranslation}>Good Morning</Text>
             </View>
             <View style={styles.historyItem}>
-              <Text style={styles.historyText}>isso é loucura</Text>
-              <Text style={styles.historyTranslation}>That's crazy</Text>
+                <Text style={styles.historyText}>isso é loucura</Text>
+                <Text style={styles.historyTranslation}>That's crazy</Text>
             </View>
             <View style={styles.historyItem}>
-              <Text style={styles.historyText}>aku perlu membeli cangkir biru</Text>
-              <Text style={styles.historyTranslation}>I need to buy a blue cup</Text>
+                <Text style={styles.historyText}>aku perlu membeli cangkir biru</Text>
+                <Text style={styles.historyTranslation}>I need to buy a blue cup</Text>
             </View>
-            <Text style={styles.historyMore}>more
-                <Ionicons name="caret-forward-outline"></Ionicons>
-            </Text>
-          </View>
+           </View>
         )}
       </KeyboardAvoidingView>
     </GlobalWrapper>
@@ -117,7 +120,7 @@ const styles = StyleSheet.create({
   },
   translateButtonText: {
     color: "#3b9eff",
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "bold",
   },
   iconContainer: {
@@ -135,14 +138,20 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
+    flexDirection: "column", // Keep items stacked vertically
+  },
+  historyHeader: {
+    flexDirection: "row", // Items will be positioned horizontally
+    justifyContent: "space-between", // Space between the title and 'more'
+    alignItems: "center", // Align items vertically in the center
+    marginBottom: 20, // Add space below the header
   },
   historyTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "bold",
-    marginBottom: 10,
   },
   historyItem: {
-    marginBottom: 10,
+    marginBottom: 20,
   },
   historyText: {
     fontSize: 16,
@@ -155,8 +164,6 @@ const styles = StyleSheet.create({
   },
   historyMore: {
     color: "#007bff",
-    textAlign: "right",
-    marginTop: 10,
     fontSize: 16,
   },
 });
