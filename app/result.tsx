@@ -1,28 +1,34 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { useRouter } from "expo-router";
-import SettingsIcon from "../components/SettingsIcon"; // Import the SettingsIcon
-import BackButton from "../components/BackButton"; // Import the BackButton component
-import GlobalWrapper from "../components/GlobalWrapper"; // Import GlobalWrapper
+import { useRouter, useLocalSearchParams } from "expo-router";
+import SettingsIcon from "../components/SettingsIcon";
+import BackButton from "../components/BackButton";
+import GlobalWrapper from "../components/GlobalWrapper";
 
-export default function HomeScreen() {
+export default function ResultScreen() {
   const router = useRouter();
+  const { text } = useLocalSearchParams();
+
+  // Ensure `text` is a string (handle array case)
+  const decodedText = text ? decodeURIComponent(Array.isArray(text) ? text[0] : text) : "No text provided";
 
   return (
     <GlobalWrapper>
-        <View style={styles.container}>
-            <SettingsIcon />
-            <BackButton />
+      <View style={styles.container}>
+        <SettingsIcon />
+        <BackButton />
 
         <Text style={styles.title}>Translation Result Page</Text>
         <Text style={styles.subtitle}>This is the translation result page</Text>
 
+        <Text style={styles.resultText}>{decodedText}</Text>
+
         <TouchableOpacity 
-            style={styles.button}
-            onPress={() => router.push("/about")}
+          style={styles.button}
+          onPress={() => router.push("/about")}
         >
-            <Text style={styles.buttonText}>Go to About Page</Text>
+          <Text style={styles.buttonText}>Go to About Page</Text>
         </TouchableOpacity>
-        </View>
+      </View>
     </GlobalWrapper>
   );
 }
@@ -43,6 +49,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#666",
     marginBottom: 20,
+  },
+  resultText: {
+    fontSize: 18,
+    color: "#000",
+    marginBottom: 20,
+    fontWeight: "bold",
   },
   button: {
     backgroundColor: "#007bff",

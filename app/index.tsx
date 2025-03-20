@@ -25,14 +25,7 @@ export default function HomeScreen() {
 
         <TouchableOpacity 
             style={styles.button}
-            onPress={() => router.push("/about")}
-        >
-            <Text style={styles.buttonText}>Go to About Page</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-            style={styles.button}
-            onPress={() => router.push("/result")}
+            onPress={() => router.push({ pathname: "/result", params: { text: encodeURIComponent(inputText) } })}
         >
             <Text style={styles.buttonText}>Translate</Text>
         </TouchableOpacity>
