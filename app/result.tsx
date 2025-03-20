@@ -11,8 +11,8 @@ export default function HomeScreen() {
         <View style={styles.container}>
             <SettingsIcon />
 
-        <Text style={styles.title}>Homepage</Text>
-        <Text style={styles.subtitle}>This is the homepage</Text>
+        <Text style={styles.title}>Translation Result Page</Text>
+        <Text style={styles.subtitle}>This is the translation result page</Text>
 
         <TouchableOpacity 
             style={styles.button}
