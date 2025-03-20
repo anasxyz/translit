@@ -20,6 +20,13 @@ export default function HomeScreen() {
         >
             <Text style={styles.buttonText}>Go to About Page</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity
+            style={styles.button}
+            onPress={() => router.push("/result")}
+        >
+            <Text style={styles.buttonText}>Translate</Text>
+        </TouchableOpacity>
         </View>
     </GlobalWrapper>
   );
@@ -47,6 +54,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
+    margin: 5,
   },
   buttonText: {
     color: "#fff",

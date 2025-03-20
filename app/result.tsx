@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import SettingsIcon from "../components/SettingsIcon"; // Import the SettingsIcon
+import BackButton from "../components/BackButton"; // Import the BackButton component
 import GlobalWrapper from "../components/GlobalWrapper"; // Import GlobalWrapper
 
 export default function HomeScreen() {
@@ -10,6 +11,7 @@ export default function HomeScreen() {
     <GlobalWrapper>
         <View style={styles.container}>
             <SettingsIcon />
+            <BackButton />
 
         <Text style={styles.title}>Translation Result Page</Text>
         <Text style={styles.subtitle}>This is the translation result page</Text>
