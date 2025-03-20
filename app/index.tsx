@@ -33,30 +33,36 @@ export default function HomeScreen() {
         <View style={styles.header}>
           {/* Language selection area moved to the right */}
           <View style={styles.languageSelectContainer}>
-            <Picker
-              selectedValue={sourceLanguage}
-              style={styles.picker}
-              onValueChange={(itemValue) => setSourceLanguage(itemValue)}
-            >
-              <Picker.Item label="English" value="English" />
-              <Picker.Item label="Spanish" value="Spanish" />
-              <Picker.Item label="French" value="French" />
-              <Picker.Item label="Chinese" value="Chinese" />
-              {/* Add more languages as needed */}
-            </Picker>
+            <View style={styles.pickerWrapper}>
+                <Picker
+                selectedValue={sourceLanguage}
+                style={styles.picker}
+                onValueChange={(itemValue) => setSourceLanguage(itemValue)}
+                >
+                <Picker.Item label="English" value="English" />
+                <Picker.Item label="Spanish" value="Spanish" />
+                <Picker.Item label="French" value="French" />
+                <Picker.Item label="Chinese" value="Chinese" />
+                {/* Add more languages as needed */}
+                </Picker>
+                <Ionicons name="caret-down" size={24} style={styles.pickerArrow} />
+            </View>
             <Text style={styles.languageText}>to</Text>
-            <Picker
-              selectedValue={targetLanguage}
-              style={styles.picker}
-              onValueChange={(itemValue) => setTargetLanguage(itemValue)}
-            >
-              <Picker.Item label="German" value="German" />
-              <Picker.Item label="Italian" value="Italian" />
-              <Picker.Item label="Portuguese" value="Portuguese" />
-              <Picker.Item label="Japanese" value="Japanese" />
-              {/* Add more languages as needed */}
-            </Picker>
-          </View>
+            <View style={styles.pickerWrapper}>
+                <Picker
+                selectedValue={targetLanguage}
+                style={styles.picker}
+                onValueChange={(itemValue) => setTargetLanguage(itemValue)}
+                >
+                <Picker.Item label="German" value="German" />
+                <Picker.Item label="Italian" value="Italian" />
+                <Picker.Item label="Portuguese" value="Portuguese" />
+                <Picker.Item label="Japanese" value="Japanese" />
+                {/* Add more languages as needed */}
+                </Picker>
+                <Ionicons name="caret-down" size={24} style={styles.pickerArrow} />
+            </View>
+            </View>
           <SettingsIcon />
         </View>
 
@@ -131,13 +137,24 @@ const styles = StyleSheet.create({
   },
   picker: {
     height: 50,
-    width: 120, // Set width for dropdowns
+    width: 150, // Increase the width to allow the full language name
     color: "#fff",
+    marginRight: 0, // Remove extra margin from the right
+  },
+  pickerWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  pickerArrow: {
+    position: "absolute",
+    right: 10, // Align the arrow to the right
+    color: "#fff", // Make the arrow white
   },
   languageText: {
     color: "#fff",
     fontSize: 18,
-    marginHorizontal: 0, // Space between source and target language
+    marginHorizontal: 5, // Space between source and target language
   },
   translateButton: {
     backgroundColor: "#fff",
