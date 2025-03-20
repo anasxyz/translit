@@ -16,7 +16,7 @@ export default function SettingsIcon() {
       }}
       onPress={() => router.back()} // Navigate to previous screen
     >
-      <Ionicons name="arrow-back" size={24} color="black" />
+      <Ionicons name="arrow-back" size={24} color="white" />
     </TouchableOpacity>
   );
 }
