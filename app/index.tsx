@@ -64,6 +64,12 @@ export default function HomeScreen() {
                 labelStyle={{ color: "#fff" }} // Set dropdown menu text color to black
                 placeholder="Select Source Language"
                 placeholderStyle={styles.placeholderText}
+                ArrowDownIconComponent={({ style }) => (
+                    <Ionicons name="chevron-down" size={20} color="white" />
+                  )}
+                  ArrowUpIconComponent={({ style }) => (
+                    <Ionicons name="chevron-up" size={20} color="white" />
+                  )}
               />
             </View>
             <Text style={styles.languageText}>to</Text>
@@ -86,6 +92,12 @@ export default function HomeScreen() {
                 labelStyle={{ color: "#fff" }} // Set dropdown menu text color to black
                 placeholder="Select Target Language"
                 placeholderStyle={styles.placeholderText}
+                ArrowDownIconComponent={({ style }) => (
+                    <Ionicons name="chevron-down" size={20} color="white" />
+                  )}
+                  ArrowUpIconComponent={({ style }) => (
+                    <Ionicons name="chevron-up" size={20} color="white" />
+                  )}
               />
             </View>
           </View>
@@ -175,9 +187,10 @@ const styles = StyleSheet.create({
   dropdown: {
     height: 50,
     width: 150, // Set width for dropdown
-    backgroundColor: "rgba(255, 255, 255, 0.3)", // Set background color to match design
+    backgroundColor: "rgba(255, 255, 255, 0)", // Set background color to match design
     borderRadius: 5,
     marginRight: 10, // Add margin to space out the items
+    borderWidth: 0, // Remove the outline
   },
   dropdownList: {
     backgroundColor: "#3b9eff", // Background of the dropdown list
@@ -258,7 +271,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   textInput: {
-    backgroundColor: "rgba(255, 255, 255, 0.3)",
+    backgroundColor: "rgba(255, 255, 255, 0)",
     borderRadius: 10,
     padding: 15,
     fontSize: 18,
