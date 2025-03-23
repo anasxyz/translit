@@ -9,7 +9,7 @@ export default function SettingsIcon() {
     <TouchableOpacity
       style={{
         position: "absolute",
-        top: 33,
+        top: 42,
         right: 25,
         zIndex: 10, // Ensure it's above other elements
       }}

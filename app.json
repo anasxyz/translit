@@ -14,7 +14,19 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "userInterfaceStyle": "dark"
+    },
+    "androidNavigationBar": {
+      "backgroundColor": "#1a1a1a",
+      "navigationBarColor": "#1a1a1a",
+      "softwareKeyboardLayoutMode": "pan",
+      "barStyle": "light-content"
+    },
+    "androidStatusBar": {
+      "backgroundColor": "#1a1a1a",
+      "translucent": true,
+      "barStyle": "light-content"
     },
     "android": {
       "adaptiveIcon": {

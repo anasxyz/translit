@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform, Keyboard, Alert } from "react-native";
+import { View, Text, StyleSheet, StatusBar, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform, Keyboard, Alert } from "react-native";
 import { useState, useEffect } from "react";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons"; // Changed to Ionicons
@@ -486,7 +486,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 15,
-    paddingTop: Platform.OS === 'ios' ? 50 : 20,
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 44,
+    marginTop: Platform.OS === 'android' ? 0 : StatusBar.currentHeight,
     paddingBottom: 10,
     backgroundColor: '#1a1a1a',
   },

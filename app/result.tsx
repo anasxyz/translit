@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, Platform, Dimensions } from "react-native";
+import { View, Text, StatusBar, StyleSheet, TouchableOpacity, Platform, Dimensions } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import SettingsIcon from "../components/SettingsIcon";
 import BackButton from "../components/BackButton";
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 15,
-    paddingTop: Platform.OS === 'ios' ? 50 : 20,
+    paddingTop: StatusBar.currentHeight || 44, // Add this line
     paddingBottom: 10,
     backgroundColor: '#1a1a1a',
   },
