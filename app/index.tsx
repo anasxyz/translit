@@ -8,6 +8,7 @@ import GlobalWrapper from "../components/GlobalWrapper";
 import * as ImagePicker from "expo-image-picker";
 import { Buffer } from 'buffer';
 import { createClient } from '@supabase/supabase-js';
+import LoadingOverlay from '../components/LoadingOverlay';
 
 const supabaseUrl = 'https://brgyluuzcqdpvkjhtnyw.supabase.co'; // Replace with your Supabase URL
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJyZ3lsdXV6Y3FkcHZramh0bnl3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEyNzYzNTcsImV4cCI6MjA1Njg1MjM1N30.xRZXgLIm8MLN7TLm6VZh_2r3mZ_UCtYiPZmx8XUPeaQ'; // Replace with your Supabase anon key
@@ -21,6 +22,7 @@ export default function HomeScreen() {
   const [targetLanguage, setTargetLanguage] = useState("German"); // Default target language
   const [openSource, setOpenSource] = useState(false); // State to open/close dropdown
   const [openTarget, setOpenTarget] = useState(false); // State to open/close dropdown
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const showSubscription = Keyboard.addListener("keyboardDidShow", () => setIsKeyboardOpen(true));
@@ -203,6 +205,7 @@ export default function HomeScreen() {
 
   // Send API request
   const sendApiRequest = async (payload: Payload[]) => {
+    if (!isLoading) setIsLoading(true); // Show loading if not already showing
     try {
       const apiUrl = "https://openrouter.ai/api/v1/chat/completions";
 
@@ -251,6 +254,8 @@ export default function HomeScreen() {
       // Handle errors
       console.error("Image text extraction error:", errorMessage);
       Alert.alert("Error", `Something went wrong while extracting text from the image: ${errorMessage}`);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -378,6 +383,7 @@ export default function HomeScreen() {
           </View>
         )}
       </KeyboardAvoidingView>
+      {isLoading && <LoadingOverlay />}
     </GlobalWrapper>
   );
 }
@@ -465,6 +471,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
+    zIndex: 10001,
   },
   historyHeader: {
     flexDirection: "row",
