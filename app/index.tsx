@@ -393,8 +393,9 @@ export default function HomeScreen() {
                 />
               </View>
             </View>
-            <SettingsIcon />
           </View>
+          
+          <SettingsIcon />
 
           {/* Text Input Area */}
           <Animated.View style={{ height: textInputHeight }}>
@@ -613,22 +614,24 @@ const styles = StyleSheet.create({
     borderColor: '#333',
   },
   historyContainer: {
-    backgroundColor: '#2a2a2a',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    padding: 20,
-    position: "absolute",
-    bottom: -15,
+    // backgroundColor: '#2a2a2a',
+    borderRadius: 20,
+    padding: 27,
+    // position: "absolute",
+    bottom: 20,
     left: 0,
     right: 0,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: -2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    // shadowColor: "#000",
+    // shadowOffset: {
+    //   width: 0,
+    //   height: -2,
+    // },
+    // shadowOpacity: 0.25,
+    // shadowRadius: 3.84,
+    // elevation: 5,
+    height: 260,
+    borderWidth: 2,
+    borderColor: "#333",
   },
   historyHeader: {
     flexDirection: "row",
@@ -646,9 +649,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   historyItem: {
-    marginBottom: 20,
+    marginBottom: 10,
     borderBottomColor: "rgba(177, 177, 177, 0.5)",
-    borderBottomWidth: 0.5,
+    // borderBottomWidth: 0.5,
     paddingBottom: 5,
   },
   historyText: {
