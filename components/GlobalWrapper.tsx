@@ -14,6 +14,6 @@ export default function GlobalWrapper({ children }: { children: React.ReactNode 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#3b9eff", // Default background color
+    backgroundColor: '#1a1a1a',
   },
 });

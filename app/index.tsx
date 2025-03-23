@@ -142,7 +142,7 @@ export default function HomeScreen() {
       const payloads: Payload[] = [
         {
           type: 'text',
-          text: 'Extract the text from the provided image and return only the extracted text, nothing else (without quotation marks). If there isnt any text, just reply with "No Text Found"',
+          text: `Extract the text from the provided image and return only the extracted text from the image translated to ${targetLanguage}, dont reply with anything else (without quotation marks). If there isnt any text, just reply with "No Text Found"`,
         },
         {
           type: 'image_url',
@@ -458,7 +458,6 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1a1a1a',
     padding: 20,
     // position: "relative",
   },
@@ -600,7 +599,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
     padding: 20,
     position: "absolute",
-    bottom: 0,
+    bottom: -15,
     left: 0,
     right: 0,
     shadowColor: "#000",
@@ -629,6 +628,9 @@ const styles = StyleSheet.create({
   },
   historyItem: {
     marginBottom: 20,
+    borderBottomColor: "rgba(177, 177, 177, 0.5)",
+    borderBottomWidth: 0.5,
+    paddingBottom: 5,
   },
   historyText: {
     fontSize: 16,
