@@ -5,6 +5,8 @@ import { Ionicons } from "@expo/vector-icons"; // Changed to Ionicons
 import DropDownPicker from 'react-native-dropdown-picker'; // Import custom dropdown
 import SettingsIcon from "../components/SettingsIcon";
 import GlobalWrapper from "../components/GlobalWrapper";
+import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from 'expo-file-system';
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -33,28 +35,136 @@ export default function HomeScreen() {
   }
 
   // Handle the camera button press
-  const cameraButtonPress = () => {
-    const imageUrl = "https://i.ytimg.com/vi/zZslAVsBBGE/sddefault.jpg";
+  const cameraButtonPress = async () => {
+    try {
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert("Permission Required", "We need access to your camera and gallery.");
+        return;
+      }
 
-    const requestPayload: Payload = {
-      type: "text",
-      text: "Extract the text from this image and dont reply with anything else other than the text exactly as it was written in the image including capital letters, punctuation, etc (without quotation marks). If there is no text whatsoever then reply with 'No Text Found'",
-    };
-
-    const imagePayload: Payload = {
-      type: "image_url",
-      image_url: {
-        url: imageUrl,
-      },
-    };
-
-    const combinedPayload = [
-      requestPayload,
-      imagePayload
-    ];
-
-    sendApiRequest(combinedPayload);
+      Alert.alert(
+        "Choose an Option",
+        "Would you like to take a picture or select one from your gallery?",
+        [
+          { text: "Camera", onPress: openCamera },
+          { text: "Gallery", onPress: openGallery },
+          { text: "Cancel", style: "cancel" },
+        ]
+      );
+    } catch (error) {
+      console.error("Permission Error:", error);
+      Alert.alert("Error", "Something went wrong while requesting permissions.");
+    }
   };
+
+  // Handle the camera button press
+const openCamera = async () => {
+  try {
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ["images"],
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled && result.assets.length > 0) {
+      const imageUri = result.assets[0].uri; // Get image URI
+      uploadImageToImgur(imageUri); // Upload the image to Imgur
+    }
+  } catch (error) {
+    console.error('Camera Error:', error);
+    Alert.alert('Error', 'Something went wrong while opening the camera.');
+  }
+};
+
+// Handle the gallery button press
+const openGallery = async () => {
+  try {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled && result.assets.length > 0) {
+      const imageUri = result.assets[0].uri; // Get image URI
+      uploadImageToImgur(imageUri); // Upload the image to Imgur
+    }
+  } catch (error) {
+    console.error('Gallery Error:', error);
+    Alert.alert('Error', 'Something went wrong while accessing the gallery.');
+  }
+};
+
+const uploadImageToImgur = async (uri: string) => {
+  try {
+    console.log("Uploading image with URI:", uri);
+
+    // Fetch the image as a blob
+    const response = await fetch(uri);
+
+    // Check if the response is successful
+    if (!response.ok) {
+      throw new Error(`Failed to fetch image from URI: ${response.statusText}`);
+    }
+
+    // Convert the image to a Blob
+    const blob = await response.blob();
+
+    console.log("Fetched image blob:", blob);
+
+    // Convert the Blob to a File object
+    const file = new File([blob], "image.jpg", { type: "image/jpeg" });
+
+    // Create form data for the image
+    const formData = new FormData();
+    formData.append('image', file);
+
+    // Set the headers for Imgur API request
+    const headers = {
+      'Authorization': 'Client-ID YOUR_IMGUR_CLIENT_ID', // Replace with your Imgur Client ID
+    };
+
+    // Send a POST request to Imgur API
+    const uploadResponse = await fetch('https://api.imgur.com/3/image', {
+      method: 'POST',
+      headers: headers,
+      body: formData,
+    });
+
+    // Check if the upload was successful
+    const uploadResult = await uploadResponse.json();
+
+    if (uploadResult.success) {
+      const imageUrl = uploadResult.data.link; // This is the URL of the uploaded image
+      console.log('Image uploaded to Imgur:', imageUrl);
+
+      // Now send the URL to the API for text extraction
+      const payloadText = {
+        type: 'text',
+        text: 'Extract the text from the provided image and return only the extracted text, nothing else.',
+      };
+
+      const payloadImage = {
+        type: 'image_url',
+        image_url: { url: imageUrl },
+      };
+
+      // Send the payloads to the API
+      sendApiRequest([payloadText, payloadImage]);
+    } else {
+      throw new Error('Image upload to Imgur failed: ' + uploadResult.data.error);
+    }
+  } catch (error) {
+    const errorMessage = (error as Error).message || "Unknown error occurred";
+
+    console.error('Error uploading image to Imgur:', errorMessage);
+    Alert.alert('Error', `Something went wrong while uploading the image to Imgur: ${errorMessage}`);
+  }
+};
+
 
   // Handle the mic button press
   const micButtonPress = () => {
