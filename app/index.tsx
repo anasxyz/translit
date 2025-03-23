@@ -9,6 +9,7 @@ import * as ImagePicker from "expo-image-picker";
 import { Buffer } from 'buffer';
 import { createClient } from '@supabase/supabase-js';
 import LoadingOverlay from '../components/LoadingOverlay';
+import { Animated } from 'react-native';
 
 const supabaseUrl = 'https://brgyluuzcqdpvkjhtnyw.supabase.co'; // Replace with your Supabase URL
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJyZ3lsdXV6Y3FkcHZramh0bnl3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEyNzYzNTcsImV4cCI6MjA1Njg1MjM1N30.xRZXgLIm8MLN7TLm6VZh_2r3mZ_UCtYiPZmx8XUPeaQ'; // Replace with your Supabase anon key
@@ -23,11 +24,42 @@ export default function HomeScreen() {
   const [openSource, setOpenSource] = useState(false); // State to open/close dropdown
   const [openTarget, setOpenTarget] = useState(false); // State to open/close dropdown
   const [isLoading, setIsLoading] = useState(false);
+  const [buttonPosition] = useState(new Animated.Value(0));
+  const [textInputHeight] = useState(new Animated.Value(412)); // Initial height
 
   useEffect(() => {
-    const showSubscription = Keyboard.addListener("keyboardDidShow", () => setIsKeyboardOpen(true));
-    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => setIsKeyboardOpen(false));
-
+    const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
+      setIsKeyboardOpen(true);
+      // Animate buttons up
+      Animated.timing(buttonPosition, {
+        toValue: -4,
+        duration: 150,
+        useNativeDriver: true,
+      }).start();
+      // Animate text input height
+      Animated.timing(textInputHeight, {
+        toValue: 355, // Reduced height when keyboard is shown
+        duration: 150,
+        useNativeDriver: false, // Height animation cannot use native driver
+      }).start();
+    });
+  
+    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+      setIsKeyboardOpen(false);
+      // Animate buttons down
+      Animated.timing(buttonPosition, {
+        toValue: 0,
+        duration: 150,
+        useNativeDriver: true,
+      }).start();
+      // Restore text input height
+      Animated.timing(textInputHeight, {
+        toValue: 412, // Original height
+        duration: 150,
+        useNativeDriver: false,
+      }).start();
+    });
+  
     return () => {
       showSubscription.remove();
       hideSubscription.remove();
@@ -329,16 +361,18 @@ export default function HomeScreen() {
         </View>
 
         {/* Text Input Area */}
-        <TextInput
-            style={styles.textInput}
+        <Animated.View style={{ height: textInputHeight }}>
+          <TextInput
+            style={[styles.textInput, { height: '100%' }]} // Remove fixed height from styles
             placeholder="Enter text"
             placeholderTextColor="rgba(255, 255, 255, 0.3)"
             value={inputText}
             onChangeText={setInputText}
-            multiline={true} // Enable multiline text input
-            textAlignVertical="top" // Align the text to the top of the input area
+            multiline={true}
+            textAlignVertical="top"
             numberOfLines={12}
-        />
+          />
+        </Animated.View>
 
         {/* Translate Button */}
         {/* <TouchableOpacity
@@ -349,7 +383,14 @@ export default function HomeScreen() {
         </TouchableOpacity> */}
 
         {/* Camera & Mic Icons */}
-        <View style={styles.iconContainer}>
+        <Animated.View 
+          style={[
+            styles.iconContainer,
+            {
+              transform: [{ translateY: buttonPosition }],
+            }
+          ]}
+        >
           <TouchableOpacity style={styles.translateIconButton} onPress={translateButtonPress}>
             <Ionicons name="language-outline" size={32} color="white" />
           </TouchableOpacity>
@@ -364,7 +405,7 @@ export default function HomeScreen() {
               <Ionicons name="volume-medium-outline" size={32} color="white" />
             </TouchableOpacity>
           </View>
-        </View>
+        </Animated.View>
 
         {/* Hide history when keyboard is open */}
         {!isKeyboardOpen && (
@@ -401,6 +442,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#1a1a1a',
     padding: 20,
+    // position: "relative",
   },
   header: {
     flexDirection: "row",
@@ -454,7 +496,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   textInput: {
-    // backgroundColor: '#rgba(42, 42, 42, 0.3)',
     backgroundColor: '#1a1a1a',
     borderRadius: 20,
     borderWidth: 2,
@@ -463,7 +504,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "#fff",
     marginBottom: 20,
-    height: 412,
+    // height: 412, // Remove this line
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -507,7 +548,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginVertical: 20,
     paddingHorizontal: 0,
-    bottom: 35,
+    bottom: 15,
   },
   rightIconsContainer: {
     flexDirection: "row",
