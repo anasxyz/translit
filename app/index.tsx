@@ -245,55 +245,73 @@ export default function HomeScreen() {
 
   // Send API request
   const sendApiRequest = async (payload: Payload[]) => {
-    if (!isLoading) setIsLoading(true); // Show loading if not already showing
+    if (!isLoading) setIsLoading(true);
     try {
       const apiUrl = "https://openrouter.ai/api/v1/chat/completions";
-
-      // Send the request with the image extraction payload
-      const response = await fetch(apiUrl, {
-        method: "POST",
-        headers: {
-          "Authorization": "Bearer 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",  // Replace with your actual OpenRouter API key
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "google/gemma-3-27b-it:free",  // You may need to adjust the model to match your image extraction model if OpenRouter provides one
-          messages: [
-            {
+      const headers = {
+        "Authorization": "Bearer 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",
+        "Content-Type": "application/json",
+      };
+  
+      // Send both requests in parallel if source language is "Auto"
+      const requests = [
+        // Translation request
+        fetch(apiUrl, {
+          method: "POST",
+          headers,
+          body: JSON.stringify({
+            model: "google/gemma-3-27b-it:free",
+            messages: [{
               role: "user",
-              content: payload,
-            }
-          ]
+              content: payload
+            }]
+          })
         })
+      ];
+  
+      // Add language detection request if source is "Auto"
+      if (sourceLanguage === "Auto" && !payload[0].image_url) {
+        const detectionPayload = {
+          model: "google/gemma-3-27b-it:free",
+          messages: [{
+            role: "user",
+            content: [{
+              type: "text",
+              text: `What language is this text written in? Reply with just the language name and nothing else: "${inputText}"`
+            }]
+          }]
+        };
+  
+        requests.push(
+          fetch(apiUrl, {
+            method: "POST",
+            headers,
+            body: JSON.stringify(detectionPayload)
+          })
+        );
+      }
+  
+      // Wait for both requests to complete
+      const responses = await Promise.all(requests);
+      const results = await Promise.all(responses.map(r => r.json()));
+  
+      // Get translation and detected language
+      const translation = results[0].choices[0].message.content;
+      const detectedLanguage = results[1]?.choices[0]?.message.content;
+  
+      // Navigate to results with both translation and detected language
+      router.push({
+        pathname: "/result",
+        params: { 
+          text: encodeURIComponent(translation),
+          detectedLanguage: detectedLanguage ? encodeURIComponent(detectedLanguage) : undefined
+        },
       });
-
-      // Check if the response is OK
-      if (!response.ok) {
-        const errorDetails = await response.text();  // Capture error details
-        throw new Error(`Network response was not ok: ${response.statusText} - ${errorDetails}`);
-      }
-
-      // Parse the JSON response
-      const result = await response.json();
-
-      // Check the result for extracted text
-      if (result && result.choices && result.choices.length > 0) {
-        const extractedText = result.choices[0].message.content;  // Adjust as per actual response structure
-
-        // Proceed to the results page and send the extracted text
-        router.push({
-          pathname: "/result",
-          params: { text: encodeURIComponent(extractedText) },
-        });
-      } else {
-        throw new Error("Image text extraction failed: 'extractedText' is undefined");
-      }
+  
     } catch (error) {
       const errorMessage = (error as Error).message || "Unknown error occurred";
-
-      // Handle errors
-      console.error("Image text extraction error:", errorMessage);
-      Alert.alert("Error", `Something went wrong while extracting text from the image: ${errorMessage}`);
+      console.error("API request error:", errorMessage);
+      Alert.alert("Error", `Something went wrong: ${errorMessage}`);
     } finally {
       setIsLoading(false);
     }
@@ -316,6 +334,7 @@ export default function HomeScreen() {
                   open={openSource}
                   value={sourceLanguage}
                   items={[
+                    { label: 'Auto', value: 'Auto' },
                     { label: 'English', value: 'English' },
                     { label: 'Spanish', value: 'Spanish' },
                     { label: 'French', value: 'French' },
