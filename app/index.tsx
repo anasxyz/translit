@@ -6,7 +6,12 @@ import DropDownPicker from 'react-native-dropdown-picker'; // Import custom drop
 import SettingsIcon from "../components/SettingsIcon";
 import GlobalWrapper from "../components/GlobalWrapper";
 import * as ImagePicker from "expo-image-picker";
-import * as FileSystem from 'expo-file-system';
+
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = 'https://brgyluuzcqdpvkjhtnyw.supabase.co/rest/v1/'; // Replace with your Supabase URL
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJyZ3lsdXV6Y3FkcHZramh0bnl3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEyNzYzNTcsImV4cCI6MjA1Njg1MjM1N30.xRZXgLIm8MLN7TLm6VZh_2r3mZ_UCtYiPZmx8XUPeaQ'; // Replace with your Supabase anon key
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -34,6 +39,66 @@ export default function HomeScreen() {
     image_url?: { url: string };
   }
 
+  const uploadImage = async (uri: string) => {
+    try {
+      // Log the URI we are going to upload
+      console.log('Starting image upload for URI:', uri);
+  
+      // Fetch the image from the URI
+      const response = await fetch(uri);
+      console.log('Image fetched successfully, status code:', response.status);
+  
+      if (!response.ok) {
+        throw new Error(`Failed to fetch image, status code: ${response.status}`);
+      }
+  
+      const blob = await response.blob();
+      console.log('Blob created successfully');
+  
+      // Create a unique filename for the image
+      const filename = uri.substring(uri.lastIndexOf('/') + 1);
+      console.log('Generated filename:', filename);
+  
+      // Upload the image to Supabase Storage
+      const { data, error } = await supabase.storage
+        .from('images')  // Assuming 'images' is your bucket name
+        .upload(`public/${filename}`, blob, { cacheControl: '3600', upsert: false });
+  
+      console.log('Supabase upload response:', data, error);
+  
+      if (error) {
+        throw error;
+      }
+  
+      // Get the public URL for the uploaded image
+      const publicURL = supabase.storage
+        .from('images')
+        .getPublicUrl(`public/${filename}`).data.publicUrl;
+  
+      console.log('Image uploaded successfully! Public URL:', publicURL);
+  
+      // Now send the URL to the API along with the extraction instruction
+      const payloadText: Payload = {
+        type: 'text',
+        text: 'Extract the text from the provided image and return only the extracted text, nothing else.',
+      };
+  
+      const payloadImage: Payload = {
+        type: 'image_url',
+        image_url: { url: publicURL },
+      };
+  
+      // Log the payload being sent to the API
+      console.log('Sending payload to API:', [payloadText, payloadImage]);
+  
+      sendApiRequest([payloadText, payloadImage]);
+  
+    } catch (error) {
+      console.error('Error during image upload:', error);
+      Alert.alert('Error', 'Something went wrong while uploading the image.');
+    }
+  };  
+
   // Handle the camera button press
   const cameraButtonPress = async () => {
     try {
@@ -58,113 +123,43 @@ export default function HomeScreen() {
     }
   };
 
-  // Handle the camera button press
-const openCamera = async () => {
-  try {
-    const result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ["images"],
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    if (!result.canceled && result.assets.length > 0) {
-      const imageUri = result.assets[0].uri; // Get image URI
-      uploadImageToImgur(imageUri); // Upload the image to Imgur
+  const openCamera = async () => {
+    try {
+      const result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
+  
+      if (!result.canceled && result.assets.length > 0) {
+        const imageUri = result.assets[0].uri; // Get image URI
+        uploadImage(imageUri); // Upload the image and send the URL to the API
+      }
+    } catch (error) {
+      console.error('Camera Error:', error);
+      Alert.alert('Error', 'Something went wrong while opening the camera.');
     }
-  } catch (error) {
-    console.error('Camera Error:', error);
-    Alert.alert('Error', 'Something went wrong while opening the camera.');
-  }
-};
-
-// Handle the gallery button press
-const openGallery = async () => {
-  try {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images"],
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    if (!result.canceled && result.assets.length > 0) {
-      const imageUri = result.assets[0].uri; // Get image URI
-      uploadImageToImgur(imageUri); // Upload the image to Imgur
+  };
+  
+  const openGallery = async () => {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
+  
+      if (!result.canceled && result.assets.length > 0) {
+        const imageUri = result.assets[0].uri; // Get image URI
+        uploadImage(imageUri); // Upload the image and send the URL to the API
+      }
+    } catch (error) {
+      console.error('Gallery Error:', error);
+      Alert.alert('Error', 'Something went wrong while accessing the gallery.');
     }
-  } catch (error) {
-    console.error('Gallery Error:', error);
-    Alert.alert('Error', 'Something went wrong while accessing the gallery.');
-  }
-};
-
-const uploadImageToImgur = async (uri: string) => {
-  try {
-    console.log("Uploading image with URI:", uri);
-
-    // Fetch the image as a blob
-    const response = await fetch(uri);
-
-    // Check if the response is successful
-    if (!response.ok) {
-      throw new Error(`Failed to fetch image from URI: ${response.statusText}`);
-    }
-
-    // Convert the image to a Blob
-    const blob = await response.blob();
-
-    console.log("Fetched image blob:", blob);
-
-    // Convert the Blob to a File object
-    const file = new File([blob], "image.jpg", { type: "image/jpeg" });
-
-    // Create form data for the image
-    const formData = new FormData();
-    formData.append('image', file);
-
-    // Set the headers for Imgur API request
-    const headers = {
-      'Authorization': 'Client-ID YOUR_IMGUR_CLIENT_ID', // Replace with your Imgur Client ID
-    };
-
-    // Send a POST request to Imgur API
-    const uploadResponse = await fetch('https://api.imgur.com/3/image', {
-      method: 'POST',
-      headers: headers,
-      body: formData,
-    });
-
-    // Check if the upload was successful
-    const uploadResult = await uploadResponse.json();
-
-    if (uploadResult.success) {
-      const imageUrl = uploadResult.data.link; // This is the URL of the uploaded image
-      console.log('Image uploaded to Imgur:', imageUrl);
-
-      // Now send the URL to the API for text extraction
-      const payloadText = {
-        type: 'text',
-        text: 'Extract the text from the provided image and return only the extracted text, nothing else.',
-      };
-
-      const payloadImage = {
-        type: 'image_url',
-        image_url: { url: imageUrl },
-      };
-
-      // Send the payloads to the API
-      sendApiRequest([payloadText, payloadImage]);
-    } else {
-      throw new Error('Image upload to Imgur failed: ' + uploadResult.data.error);
-    }
-  } catch (error) {
-    const errorMessage = (error as Error).message || "Unknown error occurred";
-
-    console.error('Error uploading image to Imgur:', errorMessage);
-    Alert.alert('Error', `Something went wrong while uploading the image to Imgur: ${errorMessage}`);
-  }
-};
-
+  };  
 
   // Handle the mic button press
   const micButtonPress = () => {
