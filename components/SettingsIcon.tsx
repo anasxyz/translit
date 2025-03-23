@@ -1,5 +1,5 @@
 import { TouchableOpacity } from "react-native";
-import { Ionicons } from "@expo/vector-icons"; // Import MaterialIcons
+import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 
 export default function SettingsIcon() {
@@ -9,8 +9,8 @@ export default function SettingsIcon() {
     <TouchableOpacity
       style={{
         position: "absolute",
-        top: 12,
-        right: 5,
+        top: 42,
+        right: 25,
         zIndex: 10, // Ensure it's above other elements
       }}
       onPress={() => router.push("/settings")} // Navigate to the settings page

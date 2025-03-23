@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, Platform, Dimensions } from "react-native";
+import { View, Text, StatusBar, StyleSheet, TouchableOpacity, Platform, Dimensions } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import SettingsIcon from "../components/SettingsIcon";
 import BackButton from "../components/BackButton";
@@ -6,10 +6,10 @@ import GlobalWrapper from "../components/GlobalWrapper";
 
 export default function ResultScreen() {
   const router = useRouter();
-  const { text } = useLocalSearchParams();
-
-  // Ensure `text` is a string (handle array case)
-  const decodedText = text ? decodeURIComponent(Array.isArray(text) ? text[0] : text) : "No text provided";
+  const params = useLocalSearchParams();
+  const decodedText = decodeURIComponent(params.text as string);
+  const detectedLanguage = params.detectedLanguage ? 
+    decodeURIComponent(params.detectedLanguage as string) : undefined;
 
   return (
     <GlobalWrapper>
@@ -22,7 +22,13 @@ export default function ResultScreen() {
 
         {/* Content */}
         <View style={styles.content}>
-          <Text style={styles.title}>Extracted Text</Text>
+          <Text style={styles.title}>Translation</Text>
+          {detectedLanguage && (
+            <View style={styles.languageInfo}>
+              <Text style={styles.languageLabel}>Detected Language:</Text>
+              <Text style={styles.languageValue}>{detectedLanguage}</Text>
+            </View>
+          )}
           <View style={styles.resultBox}>
             <Text style={styles.resultText}>{decodedText}</Text>
           </View>
@@ -43,14 +49,13 @@ export default function ResultScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1a1a1a',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 15,
-    paddingTop: Platform.OS === 'ios' ? 50 : 20,
+    paddingTop: StatusBar.currentHeight || 44, // Add this line
     paddingBottom: 10,
     backgroundColor: '#1a1a1a',
   },
@@ -58,13 +63,6 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
     paddingTop: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "600",
-    color: "#fff",
-    marginBottom: 20,
-    textAlign: 'center',
   },
   resultBox: {
     backgroundColor: '#2a2a2a',
@@ -106,5 +104,34 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 18,
     fontWeight: "600",
+  },
+  languageInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 15,
+    backgroundColor: '#1a1a1a',
+    padding: 10,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: '#333',
+  },
+  languageLabel: {
+    color: '#fff',
+    fontSize: 16,
+    marginRight: 8,
+    opacity: 0.7,
+  },
+  languageValue: {
+    color: '#3b9eff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "600",
+    color: "#fff",
+    marginBottom: 15,
+    textAlign: 'center',
   },
 });
