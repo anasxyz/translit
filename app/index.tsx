@@ -6,10 +6,10 @@ import DropDownPicker from 'react-native-dropdown-picker'; // Import custom drop
 import SettingsIcon from "../components/SettingsIcon";
 import GlobalWrapper from "../components/GlobalWrapper";
 import * as ImagePicker from "expo-image-picker";
-
+import { Buffer } from 'buffer';
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = 'https://brgyluuzcqdpvkjhtnyw.supabase.co/rest/v1/'; // Replace with your Supabase URL
+const supabaseUrl = 'https://brgyluuzcqdpvkjhtnyw.supabase.co'; // Replace with your Supabase URL
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJyZ3lsdXV6Y3FkcHZramh0bnl3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEyNzYzNTcsImV4cCI6MjA1Njg1MjM1N30.xRZXgLIm8MLN7TLm6VZh_2r3mZ_UCtYiPZmx8XUPeaQ'; // Replace with your Supabase anon key
 const supabase = createClient(supabaseUrl, supabaseKey);
 
@@ -41,63 +41,80 @@ export default function HomeScreen() {
 
   const uploadImage = async (uri: string) => {
     try {
-      // Log the URI we are going to upload
       console.log('Starting image upload for URI:', uri);
   
-      // Fetch the image from the URI
-      const response = await fetch(uri);
-      console.log('Image fetched successfully, status code:', response.status);
+      // Get the file extension
+      const ext = uri.substring(uri.lastIndexOf('.') + 1);
+      
+      // Create a unique filename
+      const filename = `${Date.now()}.${ext}`;
   
-      if (!response.ok) {
-        throw new Error(`Failed to fetch image, status code: ${response.status}`);
-      }
+      // Convert the image to base64
+      const base64Data = await new Promise<string>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.onload = () => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            if (typeof reader.result === 'string') {
+              // Remove the data URL prefix to get just the base64 string
+              const base64 = reader.result.split(',')[1];
+              resolve(base64);
+            } else {
+              reject(new Error('Failed to convert to base64'));
+            }
+          };
+          reader.onerror = () => reject(reader.error);
+          reader.readAsDataURL(xhr.response);
+        };
+        xhr.onerror = () => reject(new Error('Failed to fetch image'));
+        xhr.responseType = 'blob';
+        xhr.open('GET', uri);
+        xhr.send();
+      });
   
-      const blob = await response.blob();
-      console.log('Blob created successfully');
+      // Convert base64 to Uint8Array
+      const binaryData = Buffer.from(base64Data, 'base64');
   
-      // Create a unique filename for the image
-      const filename = uri.substring(uri.lastIndexOf('/') + 1);
-      console.log('Generated filename:', filename);
-  
-      // Upload the image to Supabase Storage
+      // Upload to Supabase Storage
       const { data, error } = await supabase.storage
-        .from('images')  // Assuming 'images' is your bucket name
-        .upload(`public/${filename}`, blob, { cacheControl: '3600', upsert: false });
-  
-      console.log('Supabase upload response:', data, error);
+        .from('images')
+        .upload(`uploads/${filename}`, binaryData, {
+          contentType: `image/${ext}`,
+          cacheControl: '3600',
+          upsert: false
+        });
   
       if (error) {
+        console.error('Supabase upload error:', error);
         throw error;
       }
   
-      // Get the public URL for the uploaded image
-      const publicURL = supabase.storage
+      // Get the public URL
+      const { data: { publicUrl } } = supabase.storage
         .from('images')
-        .getPublicUrl(`public/${filename}`).data.publicUrl;
+        .getPublicUrl(`uploads/${filename}`);
   
-      console.log('Image uploaded successfully! Public URL:', publicURL);
+      console.log('Upload successful. Public URL:', publicUrl);
   
-      // Now send the URL to the API along with the extraction instruction
-      const payloadText: Payload = {
-        type: 'text',
-        text: 'Extract the text from the provided image and return only the extracted text, nothing else.',
-      };
+      // Prepare payloads for API
+      const payloads: Payload[] = [
+        {
+          type: 'text',
+          text: 'Extract the text from the provided image and return only the extracted text, nothing else (without quotation marks). If there isnt any text, just reply with "No Text Found"',
+        },
+        {
+          type: 'image_url',
+          image_url: { url: publicUrl },
+        }
+      ];
   
-      const payloadImage: Payload = {
-        type: 'image_url',
-        image_url: { url: publicURL },
-      };
-  
-      // Log the payload being sent to the API
-      console.log('Sending payload to API:', [payloadText, payloadImage]);
-  
-      sendApiRequest([payloadText, payloadImage]);
+      await sendApiRequest(payloads);
   
     } catch (error) {
-      console.error('Error during image upload:', error);
-      Alert.alert('Error', 'Something went wrong while uploading the image.');
+      console.error('Upload error:', error);
+      Alert.alert('Upload Failed', `Could not upload the image: ${(error as Error).message}`);
     }
-  };  
+  };
 
   // Handle the camera button press
   const cameraButtonPress = async () => {
@@ -126,15 +143,17 @@ export default function HomeScreen() {
   const openCamera = async () => {
     try {
       const result = await ImagePicker.launchCameraAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ["images"],
         allowsEditing: true,
         aspect: [4, 3],
-        quality: 1,
+        quality: 0.1, // Reduced quality (0.1 to 1)
+        base64: false,
+        exif: false, // Don't include EXIF data to reduce size
       });
   
       if (!result.canceled && result.assets.length > 0) {
-        const imageUri = result.assets[0].uri; // Get image URI
-        uploadImage(imageUri); // Upload the image and send the URL to the API
+        const imageUri = result.assets[0].uri;
+        uploadImage(imageUri);
       }
     } catch (error) {
       console.error('Camera Error:', error);
@@ -145,21 +164,23 @@ export default function HomeScreen() {
   const openGallery = async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ["images"],
         allowsEditing: true,
         aspect: [4, 3],
-        quality: 1,
+        quality: 0.1, // Reduced quality (0.1 to 1)
+        base64: false,
+        exif: false, // Don't include EXIF data to reduce size
       });
   
       if (!result.canceled && result.assets.length > 0) {
-        const imageUri = result.assets[0].uri; // Get image URI
-        uploadImage(imageUri); // Upload the image and send the URL to the API
+        const imageUri = result.assets[0].uri;
+        uploadImage(imageUri);
       }
     } catch (error) {
       console.error('Gallery Error:', error);
       Alert.alert('Error', 'Something went wrong while accessing the gallery.');
     }
-  };  
+  };
 
   // Handle the mic button press
   const micButtonPress = () => {
