@@ -10,6 +10,7 @@ import { Buffer } from 'buffer';
 import { createClient } from '@supabase/supabase-js';
 import LoadingOverlay from '../components/LoadingOverlay';
 import { Animated } from 'react-native';
+import { TouchableWithoutFeedback } from 'react-native';
 
 const supabaseUrl = 'https://brgyluuzcqdpvkjhtnyw.supabase.co'; // Replace with your Supabase URL
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJyZ3lsdXV6Y3FkcHZramh0bnl3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEyNzYzNTcsImV4cCI6MjA1Njg1MjM1N30.xRZXgLIm8MLN7TLm6VZh_2r3mZ_UCtYiPZmx8XUPeaQ'; // Replace with your Supabase anon key
@@ -65,6 +66,13 @@ export default function HomeScreen() {
       hideSubscription.remove();
     };
   }, []);
+
+  const handleOutsidePress = () => {
+    if (openSource || openTarget) {
+      setOpenSource(false);
+      setOpenTarget(false);
+    }
+  };
 
   // Define the Payload interface
   interface Payload {
@@ -293,145 +301,155 @@ export default function HomeScreen() {
 
   return (
     <GlobalWrapper>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.container}
-      >
-        {/* Header with Language Selection and Settings Icon */}
-        <View style={styles.header}>
-          {/* Language selection area moved to the right */}
-          <View style={styles.languageSelectContainer}>
-            <View style={styles.pickerWrapper}>
-              {/* Custom dropdown for source language */}
-              <DropDownPicker
-                open={openSource}
-                value={sourceLanguage}
-                items={[
-                  { label: 'English', value: 'English' },
-                  { label: 'Spanish', value: 'Spanish' },
-                  { label: 'French', value: 'French' },
-                  { label: 'Chinese', value: 'Chinese' },
-                  // Add more languages as needed
-                ]}
-                setOpen={setOpenSource}
-                setValue={setSourceLanguage}
-                style={styles.dropdown}
-                textStyle={styles.dropdownText}
-                labelStyle={{ color: "#fff" }} // Set dropdown menu text color to black
-                placeholder="Select Source Language"
-                placeholderStyle={styles.placeholderText}
-                ArrowDownIconComponent={({ style }) => (
-                    <Ionicons name="chevron-down" size={20} color="white" />
-                  )}
-                  ArrowUpIconComponent={({ style }) => (
-                    <Ionicons name="chevron-up" size={20} color="white" />
-                  )}
-              />
-            </View>
-            <Text style={styles.languageText}>to</Text>
-            <View style={styles.pickerWrapper}>
-              {/* Custom dropdown for target language */}
-              <DropDownPicker
-                open={openTarget}
-                value={targetLanguage}
-                items={[
-                  { label: 'German', value: 'German' },
-                  { label: 'Italian', value: 'Italian' },
-                  { label: 'Portuguese', value: 'Portuguese' },
-                  { label: 'Japanese', value: 'Japanese' },
-                  // Add more languages as needed
-                ]}
-                setOpen={setOpenTarget}
-                setValue={setTargetLanguage}
-                style={styles.dropdown}
-                textStyle={styles.dropdownText}
-                labelStyle={{ color: "#fff" }} // Set dropdown menu text color to black
-                placeholder="Select Target Language"
-                placeholderStyle={styles.placeholderText}
-                ArrowDownIconComponent={({ style }) => (
-                    <Ionicons name="chevron-down" size={20} color="white" />
-                  )}
-                  ArrowUpIconComponent={({ style }) => (
-                    <Ionicons name="chevron-up" size={20} color="white" />
-                  )}
-              />
-            </View>
-          </View>
-          <SettingsIcon />
-        </View>
-
-        {/* Text Input Area */}
-        <Animated.View style={{ height: textInputHeight }}>
-          <TextInput
-            style={[styles.textInput, { height: '100%' }]} // Remove fixed height from styles
-            placeholder="Enter text"
-            placeholderTextColor="rgba(255, 255, 255, 0.3)"
-            value={inputText}
-            onChangeText={setInputText}
-            multiline={true}
-            textAlignVertical="top"
-            numberOfLines={12}
-          />
-        </Animated.View>
-
-        {/* Translate Button */}
-        {/* <TouchableOpacity
-          style={styles.translateButton}
-          onPress={translateButtonPress} // Handle translation on press
+      <TouchableWithoutFeedback onPress={handleOutsidePress}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={styles.container}
         >
-          <Text style={styles.translateButtonText}>Translate</Text>
-        </TouchableOpacity> */}
-
-        {/* Camera & Mic Icons */}
-        <Animated.View 
-          style={[
-            styles.iconContainer,
-            {
-              transform: [{ translateY: buttonPosition }],
-            }
-          ]}
-        >
-          <TouchableOpacity style={styles.translateIconButton} onPress={translateButtonPress}>
-            <Ionicons name="language-outline" size={32} color="white" />
-          </TouchableOpacity>
-          <View style={styles.rightIconsContainer}>
-            <TouchableOpacity style={styles.iconButton} onPress={cameraButtonPress}>
-              <Ionicons name="camera-outline" size={32} color="white" />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.iconButton} onPress={micButtonPress}>
-              <Ionicons name="mic-outline" size={32} color="white" />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.iconButton} onPress={micButtonPress}>
-              <Ionicons name="volume-medium-outline" size={32} color="white" />
-            </TouchableOpacity>
+          {/* Header with Language Selection and Settings Icon */}
+          <View style={styles.header}>
+            {/* Language selection area moved to the right */}
+            <View style={styles.languageSelectContainer}>
+              <View style={styles.pickerWrapper}>
+                {/* Custom dropdown for source language */}
+                <DropDownPicker
+                  open={openSource}
+                  value={sourceLanguage}
+                  items={[
+                    { label: 'English', value: 'English' },
+                    { label: 'Spanish', value: 'Spanish' },
+                    { label: 'French', value: 'French' },
+                    { label: 'Chinese', value: 'Chinese' },
+                    // Add more languages as needed
+                  ]}
+                  setOpen={setOpenSource}
+                  setValue={setSourceLanguage}
+                  style={styles.dropdown}
+                  textStyle={styles.dropdownText}
+                  labelStyle={{ color: "#fff" }} // Set dropdown menu text color to black
+                  placeholder="Select Source Language"
+                  placeholderStyle={styles.placeholderText}
+                  ArrowDownIconComponent={({ style }) => (
+                      <Ionicons name="chevron-down" size={20} color="white" />
+                    )}
+                    ArrowUpIconComponent={({ style }) => (
+                      <Ionicons name="chevron-up" size={20} color="white" />
+                    )}
+                  dropDownContainerStyle={styles.dropdownList}
+                  theme="DARK"
+                  selectedItemLabelStyle={{ color: "#fff" }}
+                  listItemLabelStyle={{ color: "#fff" }}
+                />
+              </View>
+              <Text style={styles.languageText}>to</Text>
+              <View style={styles.pickerWrapper}>
+                {/* Custom dropdown for target language */}
+                <DropDownPicker
+                  open={openTarget}
+                  value={targetLanguage}
+                  items={[
+                    { label: 'German', value: 'German' },
+                    { label: 'Italian', value: 'Italian' },
+                    { label: 'Portuguese', value: 'Portuguese' },
+                    { label: 'Japanese', value: 'Japanese' },
+                    // Add more languages as needed
+                  ]}
+                  setOpen={setOpenTarget}
+                  setValue={setTargetLanguage}
+                  style={styles.dropdown}
+                  textStyle={styles.dropdownText}
+                  labelStyle={{ color: "#fff" }} // Set dropdown menu text color to black
+                  placeholder="Select Target Language"
+                  placeholderStyle={styles.placeholderText}
+                  ArrowDownIconComponent={({ style }) => (
+                      <Ionicons name="chevron-down" size={20} color="white" />
+                    )}
+                    ArrowUpIconComponent={({ style }) => (
+                      <Ionicons name="chevron-up" size={20} color="white" />
+                    )}
+                  dropDownContainerStyle={styles.dropdownList}
+                  theme="DARK"
+                  selectedItemLabelStyle={{ color: "#fff" }}
+                  listItemLabelStyle={{ color: "#fff" }}
+                />
+              </View>
+            </View>
+            <SettingsIcon />
           </View>
-        </Animated.View>
 
-        {/* Hide history when keyboard is open */}
-        {!isKeyboardOpen && (
-          <View style={styles.historyContainer}>
-            <View style={styles.historyHeader}>
-              <Text style={styles.historyTitle}>History</Text>
-              <Text style={styles.historyMore}>
-                more <Ionicons name="caret-forward-outline" />
-              </Text>
-            </View>
+          {/* Text Input Area */}
+          <Animated.View style={{ height: textInputHeight }}>
+            <TextInput
+              style={[styles.textInput, { height: '100%' }]} // Remove fixed height from styles
+              placeholder="Enter text"
+              placeholderTextColor="rgba(255, 255, 255, 0.3)"
+              value={inputText}
+              onChangeText={setInputText}
+              multiline={true}
+              textAlignVertical="top"
+              numberOfLines={12}
+            />
+          </Animated.View>
 
-            <View style={styles.historyItem}>
-              <Text style={styles.historyText}>早上好</Text>
-              <Text style={styles.historyTranslation}>Good Morning</Text>
+          {/* Translate Button */}
+          {/* <TouchableOpacity
+            style={styles.translateButton}
+            onPress={translateButtonPress} // Handle translation on press
+          >
+            <Text style={styles.translateButtonText}>Translate</Text>
+          </TouchableOpacity> */}
+
+          {/* Camera & Mic Icons */}
+          <Animated.View 
+            style={[
+              styles.iconContainer,
+              {
+                transform: [{ translateY: buttonPosition }],
+              }
+            ]}
+          >
+            <TouchableOpacity style={styles.translateIconButton} onPress={translateButtonPress}>
+              <Ionicons name="language-outline" size={32} color="white" />
+            </TouchableOpacity>
+            <View style={styles.rightIconsContainer}>
+              <TouchableOpacity style={styles.iconButton} onPress={cameraButtonPress}>
+                <Ionicons name="camera-outline" size={32} color="white" />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.iconButton} onPress={micButtonPress}>
+                <Ionicons name="mic-outline" size={32} color="white" />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.iconButton} onPress={micButtonPress}>
+                <Ionicons name="volume-medium-outline" size={32} color="white" />
+              </TouchableOpacity>
             </View>
-            <View style={styles.historyItem}>
-              <Text style={styles.historyText}>isso é loucura</Text>
-              <Text style={styles.historyTranslation}>That's crazy</Text>
+          </Animated.View>
+
+          {/* Hide history when keyboard is open */}
+          {!isKeyboardOpen && (
+            <View style={styles.historyContainer}>
+              <View style={styles.historyHeader}>
+                <Text style={styles.historyTitle}>History</Text>
+                <Text style={styles.historyMore}>
+                  more <Ionicons name="caret-forward-outline" />
+                </Text>
+              </View>
+
+              <View style={styles.historyItem}>
+                <Text style={styles.historyText}>早上好</Text>
+                <Text style={styles.historyTranslation}>Good Morning</Text>
+              </View>
+              <View style={styles.historyItem}>
+                <Text style={styles.historyText}>isso é loucura</Text>
+                <Text style={styles.historyTranslation}>That's crazy</Text>
+              </View>
+              <View style={styles.historyItem}>
+                <Text style={styles.historyText}>aku perlu membeli cangkir biru</Text>
+                <Text style={styles.historyTranslation}>I need to buy a blue cup</Text>
+              </View>
             </View>
-            <View style={styles.historyItem}>
-              <Text style={styles.historyText}>aku perlu membeli cangkir biru</Text>
-              <Text style={styles.historyTranslation}>I need to buy a blue cup</Text>
-            </View>
-          </View>
-        )}
-      </KeyboardAvoidingView>
+          )}
+        </KeyboardAvoidingView>
+      </TouchableWithoutFeedback>
       {isLoading && <LoadingOverlay />}
     </GlobalWrapper>
   );
@@ -477,12 +495,18 @@ const styles = StyleSheet.create({
     right: 12,
   },
   dropdownList: {
-    backgroundColor: '#2a2a2a',
+    backgroundColor: '#1a1a1a',
     borderRadius: 20,
+    borderWidth: 2,
+    borderColor: "#333",
   },
   dropdownText: {
-    color: "#1a1a1a",
+    color: "#fff",
     fontSize: 16,
+  },
+  placeholderText: {
+    fontSize: 16,
+    color: "rgba(255, 255, 255, 0.5)",
   },
   languageText: {
     color: "#fff",
@@ -491,9 +515,6 @@ const styles = StyleSheet.create({
     right: 22,
     bottom: 17,
     // display: "none",
-  },
-  placeholderText: {
-    fontSize: 16,
   },
   textInput: {
     backgroundColor: '#1a1a1a',
