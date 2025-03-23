@@ -332,7 +332,7 @@ export default function HomeScreen() {
         <TextInput
             style={styles.textInput}
             placeholder="Enter text"
-            placeholderTextColor="#fff"
+            placeholderTextColor="rgba(255, 255, 255, 0.3)"
             value={inputText}
             onChangeText={setInputText}
             multiline={true} // Enable multiline text input
@@ -341,21 +341,29 @@ export default function HomeScreen() {
         />
 
         {/* Translate Button */}
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.translateButton}
           onPress={translateButtonPress} // Handle translation on press
         >
           <Text style={styles.translateButtonText}>Translate</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         {/* Camera & Mic Icons */}
         <View style={styles.iconContainer}>
-          <TouchableOpacity onPress={cameraButtonPress}>
-            <Ionicons name="camera" size={32} color="white" />
+          <TouchableOpacity style={styles.translateIconButton} onPress={translateButtonPress}>
+            <Ionicons name="language-outline" size={32} color="white" />
           </TouchableOpacity>
-          <TouchableOpacity onPress={micButtonPress}>
-            <Ionicons name="mic" size={32} color="white" />
-          </TouchableOpacity>
+          <View style={styles.rightIconsContainer}>
+            <TouchableOpacity style={styles.iconButton} onPress={cameraButtonPress}>
+              <Ionicons name="camera-outline" size={32} color="white" />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.iconButton} onPress={micButtonPress}>
+              <Ionicons name="mic-outline" size={32} color="white" />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.iconButton} onPress={micButtonPress}>
+              <Ionicons name="volume-medium-outline" size={32} color="white" />
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Hide history when keyboard is open */}
@@ -391,79 +399,141 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#3b9eff",
+    backgroundColor: '#1a1a1a',
     padding: 20,
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 30,
+    paddingHorizontal: 15,
+    paddingTop: Platform.OS === 'ios' ? 50 : 20,
+    paddingBottom: 10,
+    backgroundColor: '#1a1a1a',
   },
   languageSelectContainer: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "flex-end", // Align the language dropdowns to the right
-    marginLeft: 0, // Push the container to the right
+    justifyContent: "flex-end",
+    marginLeft: 0,
   },
   pickerWrapper: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    width: 160, // Shrink the width of the picker wrapper
+    width: 160,
   },
   dropdown: {
     height: 50,
-    width: 150, // Set width for dropdown
-    backgroundColor: "rgba(255, 255, 255, 0)", // Set background color to match design
-    borderRadius: 5,
-    marginRight: 10, // Add margin to space out the items
-    borderWidth: 0, // Remove the outline
+    width: 140,
+    backgroundColor: '#1a1a1a',
+    borderRadius: 20,
+    marginRight: 10,
+    borderWidth: 2,
+    borderColor: "#333",
+    bottom: 17,
+    right: 12,
   },
   dropdownList: {
-    backgroundColor: "#3b9eff", // Background of the dropdown list
-    borderRadius: 5,
+    backgroundColor: '#2a2a2a',
+    borderRadius: 20,
   },
   dropdownText: {
-    color: "#000", // Color for the dropdown text
-    fontSize: 18,
+    color: "#1a1a1a",
+    fontSize: 16,
   },
   languageText: {
     color: "#fff",
-    fontSize: 18,
-    marginHorizontal: 5, // Space between source and target language
-    left: 5,
-    display: "none",
+    fontSize: 16,
+    marginHorizontal: 0,
+    right: 22,
+    bottom: 17,
+    // display: "none",
   },
   placeholderText: {
-    color: "#fff",
+    fontSize: 16,
+  },
+  textInput: {
+    // backgroundColor: '#rgba(42, 42, 42, 0.3)',
+    backgroundColor: '#1a1a1a',
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: "#333",
+    padding: 20,
     fontSize: 18,
+    color: "#fff",
+    marginBottom: 20,
+    height: 412,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    bottom: 10,
   },
   translateButton: {
-    backgroundColor: "#fff",
-    paddingVertical: 12,
-    paddingHorizontal: 25,
+    // backgroundColor: '#3b9eff',
+    backgroundColor: '#1a1a1a',
+    padding: 15,
     borderRadius: 20,
-    alignSelf: "center",
+    borderWidth: 2,
+    borderColor: '#333',
+    marginHorizontal: 20,
     marginBottom: 20,
-    bottom: 0,
-    top: 20,
+    alignItems: 'center',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    alignSelf: "center",
+    bottom: 17,
+    width: 370,
   },
   translateButtonText: {
-    color: "#3b9eff",
-    fontSize: 20,
-    fontWeight: "bold",
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "600",
   },
   iconContainer: {
     flexDirection: "row",
-    justifyContent: "center",
-    gap: 140,
-    marginBottom: 30,
-    bottom: 0,
-    top: 30,
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginVertical: 20,
+    paddingHorizontal: 0,
+    bottom: 35,
+  },
+  rightIconsContainer: {
+    flexDirection: "row",
+    gap: 13, // Smaller gap between right icons
+  },
+  translateIconButton: {
+    width: 150, // Wider button for translate
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: '#333',
+    marginRight: 15, // Space between translate and other icons
+  },
+  iconButton: {
+    width: 60,
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: '#333',
   },
   historyContainer: {
-    backgroundColor: "#fff",
+    backgroundColor: '#2a2a2a',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 20,
@@ -472,19 +542,28 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     zIndex: 10001,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: -2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   historyHeader: {
     flexDirection: "row",
-    justifyContent: "space-between", // Align History title and 'more' to opposite sides
+    justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 20,
   },
   historyTitle: {
     fontSize: 20,
-    fontWeight: "bold",
+    fontWeight: "600",
+    color: "#fff",
   },
   historyMore: {
-    color: "#007bff",
+    color: "#3b9eff",
     fontSize: 16,
   },
   historyItem: {
@@ -492,20 +571,12 @@ const styles = StyleSheet.create({
   },
   historyText: {
     fontSize: 16,
-    color: "#666",
+    color: "#fff",
+    opacity: 0.7,
   },
   historyTranslation: {
     fontSize: 16,
-    color: "#007bff",
-    fontWeight: "bold",
-  },
-  textInput: {
-    backgroundColor: "rgba(255, 255, 255, 0)",
-    borderRadius: 10,
-    padding: 15,
-    fontSize: 18,
-    color: "#fff",
-    marginBottom: 20,
-    height: 305, // Set a fixed height for the TextInput
+    color: "#3b9eff",
+    fontWeight: "600",
   },
 });
