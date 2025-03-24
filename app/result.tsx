@@ -23,10 +23,13 @@ export default function ResultScreen() {
   ? detectedLanguage 
   : sourceLanguage;
 
+  const [showCopyFeedback, setShowCopyFeedback] = useState(false);
+  
   const handleCopy = async () => {
     try {
       await Clipboard.setStringAsync(decodedText);
-      // Optional: Add feedback that text was copied
+      setShowCopyFeedback(true);
+      setTimeout(() => setShowCopyFeedback(false), 2000); // Hide after 2 seconds
     } catch (error) {
       console.error('Failed to copy text:', error);
     }
@@ -77,7 +80,12 @@ export default function ResultScreen() {
             style={[styles.actionButton]}
             onPress={handleCopy}
           >
-            <Ionicons name="copy-outline" size={32} color="#fff" style={styles.buttonIcon} />
+            <Ionicons 
+              name={showCopyFeedback ? "checkmark-outline" : "copy-outline"} 
+              size={32} 
+              color={showCopyFeedback ? "#4CAF50" : "#fff"} 
+              style={styles.buttonIcon} 
+            />          
           </TouchableOpacity>
           
           <TouchableOpacity style={[styles.actionButton]}>
@@ -115,15 +123,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 15,
+    paddingHorizontal: 0,
     paddingTop: StatusBar.currentHeight || 44, // Add this line
-    paddingBottom: 10,
     backgroundColor: '#1a1a1a',
   },
   content: {
     flex: 1,
     paddingHorizontal: 20,
-    paddingTop: 20,
+    paddingTop: 0,
+    bottom: 17,
   },
   // resultBox: {
   //   backgroundColor: '#2a2a2a',
@@ -188,16 +196,15 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "600",
     color: "#fff",
-    marginBottom: 15,
     textAlign: 'center',
-    bottom: 13,
+    bottom: 30,
   },
   languageDirection: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 15,
-    backgroundColor: '#1a1a1a',
+    // backgroundColor: '#1a1a1a',
     padding: 15, // Increased padding
     borderRadius: 20,
     borderWidth: 2,
