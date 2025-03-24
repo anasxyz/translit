@@ -1,24 +1,36 @@
-import { View, StatusBar, ScrollView, Text, TextInput, StyleSheet, TouchableOpacity, Platform } from "react-native";
+import { View, StatusBar, ScrollView,  Text, TextInput, StyleSheet, TouchableOpacity, Platform } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import SettingsIcon from "../components/SettingsIcon";
 import BackButton from "../components/BackButton";
 import GlobalWrapper from "../components/GlobalWrapper";
+import * as Clipboard from 'expo-clipboard';
 
 export default function ResultScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
-  const decodedText = decodeURIComponent(params.text as string);
-  const detectedLanguage = params.detectedLanguage ? 
-    decodeURIComponent(params.detectedLanguage as string) : undefined;
-  const sourceLanguage = params.sourceLanguage ? 
-    decodeURIComponent(params.sourceLanguage as string) : detectedLanguage;
-  const targetLanguage = decodeURIComponent(params.targetLanguage as string);
   
+  const decodedText = decodeURIComponent(params.text as string).trim();
+  const detectedLanguage = params.detectedLanguage ? 
+    decodeURIComponent(params.detectedLanguage as string).trim() : undefined;
+  const sourceLanguage = params.sourceLanguage ? 
+    decodeURIComponent(params.sourceLanguage as string).trim() : detectedLanguage;
+  const targetLanguage = decodeURIComponent(params.targetLanguage as string).trim();
+  const originalText = decodeURIComponent(params.originalText as string).trim();
+
   const displaySourceLanguage = sourceLanguage === "Auto" && detectedLanguage 
   ? detectedLanguage 
   : sourceLanguage;
+
+  const handleCopy = async () => {
+    try {
+      await Clipboard.setStringAsync(decodedText);
+      // Optional: Add feedback that text was copied
+    } catch (error) {
+      console.error('Failed to copy text:', error);
+    }
+  };
   
   return (
     <GlobalWrapper>
@@ -37,6 +49,17 @@ export default function ResultScreen() {
             <Text style={styles.languageText}>{targetLanguage}</Text>
           </View>
 
+          <View style={styles.originalBox}>
+            <ScrollView 
+              showsVerticalScrollIndicator={true}
+              contentContainerStyle={styles.scrollContent}
+            >
+              <Text style={styles.originalText}>
+                {originalText}
+              </Text>
+            </ScrollView>
+          </View>
+
           <View style={styles.resultBox}>
             <ScrollView 
               showsVerticalScrollIndicator={true}
@@ -49,11 +72,35 @@ export default function ResultScreen() {
           </View>
         </View>
 
+        <View style={styles.buttonRow}>
+          <TouchableOpacity 
+            style={[styles.actionButton]}
+            onPress={handleCopy}
+          >
+            <Ionicons name="copy-outline" size={32} color="#fff" style={styles.buttonIcon} />
+          </TouchableOpacity>
+          
+          <TouchableOpacity style={[styles.actionButton]}>
+            <Ionicons name="share-outline" size={32} color="#fff" style={styles.buttonIcon} />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={[styles.actionButton]}>
+            <Ionicons name="bookmark-outline" size={32} color="#fff" style={styles.buttonIcon} />
+          </TouchableOpacity>
+          
+          <TouchableOpacity style={[styles.actionButton]}>
+            <Ionicons name="volume-medium-outline" size={32} color="#fff" style={styles.buttonIcon} />
+          </TouchableOpacity>
+        </View>
+
         <TouchableOpacity 
           style={styles.translateButton}
           onPress={() => router.push("/")}
         >
-          <Text style={styles.buttonText}>New Translation</Text>
+          <View style={styles.buttonContent}>
+            <Ionicons name="refresh-outline" size={32} color="#fff" style={styles.buttonIcon} />
+            <Text style={styles.buttonText}>New Translation</Text>
+          </View>
         </TouchableOpacity>
       </View>
     </GlobalWrapper>
@@ -94,25 +141,26 @@ const styles = StyleSheet.create({
   //   elevation: 5,
   // },
   translateButton: {
-    backgroundColor: '#3b9eff',
-    padding: 15,
-    borderRadius: 10,
     marginHorizontal: 20,
     marginBottom: Platform.OS === 'ios' ? 40 : 20,
+    height: 60,
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: '#333',
+    top: 47,
+  },
+  buttonContent: {
+    flex: 1,
+    flexDirection: 'row',
     alignItems: 'center',
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    justifyContent: 'center',
+    padding: 0,
   },
   buttonText: {
     color: "#fff",
     fontSize: 18,
     fontWeight: "600",
+    marginLeft: 8,
   },
   languageInfo: {
     flexDirection: 'row',
@@ -121,7 +169,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     backgroundColor: '#1a1a1a',
     padding: 10,
-    borderRadius: 10,
+    borderRadius: 20,
     borderWidth: 2,
     borderColor: '#333',
   },
@@ -142,6 +190,7 @@ const styles = StyleSheet.create({
     color: "#fff",
     marginBottom: 15,
     textAlign: 'center',
+    bottom: 13,
   },
   languageDirection: {
     flexDirection: 'row',
@@ -150,7 +199,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     backgroundColor: '#1a1a1a',
     padding: 15, // Increased padding
-    borderRadius: 10,
+    borderRadius: 20,
     borderWidth: 2,
     borderColor: '#333',
     minHeight: 55, // Added fixed height
@@ -175,12 +224,11 @@ const styles = StyleSheet.create({
   //   padding: 0,
   // },
   resultBox: {
-    backgroundColor: '#2a2a2a',
-    borderRadius: 15,
     padding: 20,
     minHeight: 200,
-    maxHeight: 400, // Add maximum height
+    // maxHeight: 400, // Add maximum height
     width: '100%',
+    height: 260,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -188,7 +236,9 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    elevation: 5,
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: '#333',
   },
   scrollContent: {
     flexGrow: 1,
@@ -197,5 +247,51 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "#fff",
     lineHeight: 24,
+  },
+  originalBox: {
+    padding: 20,
+    minHeight: 200,
+    // maxHeight: 400, // Add maximum height
+    width: '100%',
+    height: 260,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: '#333',
+    marginBottom: 17,
+  },
+  originalText: {
+    fontSize: 18,
+    color: "#fff",
+    lineHeight: 24,
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 15,
+    marginBottom: 15,
+    top: 47,
+  },
+  actionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#1a1a1a',
+    padding: 0,
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: '#333',
+    height: 60,
+    flex: 1,
+    marginHorizontal: 5,
+  },
+  buttonIcon: {
+    // marginRight: 8,
   },
 });

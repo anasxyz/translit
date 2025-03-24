@@ -306,7 +306,8 @@ export default function HomeScreen() {
           text: encodeURIComponent(translation),
           detectedLanguage: detectedLanguage ? encodeURIComponent(detectedLanguage) : undefined,
           sourceLanguage: encodeURIComponent(sourceLanguage),
-          targetLanguage: encodeURIComponent(targetLanguage)
+          targetLanguage: encodeURIComponent(targetLanguage),
+          originalText: encodeURIComponent(inputText)
         },
       });
   
