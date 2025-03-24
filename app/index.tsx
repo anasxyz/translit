@@ -304,7 +304,9 @@ export default function HomeScreen() {
         pathname: "/result",
         params: { 
           text: encodeURIComponent(translation),
-          detectedLanguage: detectedLanguage ? encodeURIComponent(detectedLanguage) : undefined
+          detectedLanguage: detectedLanguage ? encodeURIComponent(detectedLanguage) : undefined,
+          sourceLanguage: encodeURIComponent(sourceLanguage),
+          targetLanguage: encodeURIComponent(targetLanguage)
         },
       });
   
