@@ -21,7 +21,7 @@ export default function ResultScreen() {
   const originalText = decodeURIComponent(params.originalText as string).trim();
 
   const displaySourceLanguage = sourceLanguage === "Auto" && detectedLanguage 
-  ? detectedLanguage 
+  ? `Auto (${detectedLanguage})` 
   : sourceLanguage;
 
   const [showCopyFeedback, setShowCopyFeedback] = useState(false);
