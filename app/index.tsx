@@ -11,6 +11,7 @@ import { createClient } from '@supabase/supabase-js';
 import LoadingOverlay from '../components/LoadingOverlay';
 import { Animated } from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native';
+import * as Speech from 'expo-speech';
 
 const supabaseUrl = 'https://brgyluuzcqdpvkjhtnyw.supabase.co'; // Replace with your Supabase URL
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJyZ3lsdXV6Y3FkcHZramh0bnl3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEyNzYzNTcsImV4cCI6MjA1Njg1MjM1N30.xRZXgLIm8MLN7TLm6VZh_2r3mZ_UCtYiPZmx8XUPeaQ'; // Replace with your Supabase anon key
@@ -27,6 +28,7 @@ export default function HomeScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [buttonPosition] = useState(new Animated.Value(0));
   const [textInputHeight] = useState(new Animated.Value(412)); // Initial height
+  const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
@@ -441,9 +443,6 @@ export default function HomeScreen() {
               <TouchableOpacity style={styles.iconButton} onPress={micButtonPress}>
                 <Ionicons name="mic-outline" size={32} color="white" />
               </TouchableOpacity>
-              <TouchableOpacity style={styles.iconButton} onPress={micButtonPress}>
-                <Ionicons name="volume-medium-outline" size={32} color="white" />
-              </TouchableOpacity>
             </View>
           </Animated.View>
 
@@ -599,14 +598,14 @@ const styles = StyleSheet.create({
     gap: 13, // Smaller gap between right icons
   },
   translateIconButton: {
-    width: 150, // Wider button for translate
+    width: 223, // Wider button for translate
     height: 60,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 20,
     borderWidth: 2,
     borderColor: '#333',
-    marginRight: 15, // Space between translate and other icons
+    marginRight: 0, // Space between translate and other icons
   },
   iconButton: {
     width: 60,

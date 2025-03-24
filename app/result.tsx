@@ -6,6 +6,7 @@ import SettingsIcon from "../components/SettingsIcon";
 import BackButton from "../components/BackButton";
 import GlobalWrapper from "../components/GlobalWrapper";
 import * as Clipboard from 'expo-clipboard';
+import * as Speech from 'expo-speech';
 
 export default function ResultScreen() {
   const router = useRouter();
@@ -24,7 +25,8 @@ export default function ResultScreen() {
   : sourceLanguage;
 
   const [showCopyFeedback, setShowCopyFeedback] = useState(false);
-  
+  const [isPlaying, setIsPlaying] = useState(false);
+
   const handleCopy = async () => {
     try {
       await Clipboard.setStringAsync(decodedText);
@@ -35,6 +37,28 @@ export default function ResultScreen() {
     }
   };
   
+  const handleSpeak = async (text: string, language: string) => {
+    try {
+      const isSpeaking = await Speech.isSpeakingAsync();
+      if (isSpeaking) {
+        await Speech.stop();
+        setIsPlaying(false);
+      } else if (text.trim()) {
+        setIsPlaying(true);
+        await Speech.speak(text, {
+          language: language.toLowerCase(),
+          pitch: 1,
+          rate: 0.9,
+          onDone: () => setIsPlaying(false),
+          onError: () => setIsPlaying(false),
+        });
+      }
+    } catch (error) {
+      console.error('Speech Error:', error);
+      setIsPlaying(false);
+    }
+  };
+
   return (
     <GlobalWrapper>
       <View style={styles.container}>
@@ -96,8 +120,16 @@ export default function ResultScreen() {
             <Ionicons name="bookmark-outline" size={32} color="#fff" style={styles.buttonIcon} />
           </TouchableOpacity>
           
-          <TouchableOpacity style={[styles.actionButton]}>
-            <Ionicons name="volume-medium-outline" size={32} color="#fff" style={styles.buttonIcon} />
+          <TouchableOpacity 
+            style={[styles.actionButton]}
+            onPress={() => handleSpeak(decodedText, targetLanguage)}
+          >
+            <Ionicons 
+              name={isPlaying ? "stop-outline" : "volume-medium-outline"} 
+              size={32} 
+              color={isPlaying ? "#ff5050" : "#fff"} 
+              style={styles.buttonIcon} 
+            />
           </TouchableOpacity>
         </View>
 
