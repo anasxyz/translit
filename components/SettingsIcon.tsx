@@ -9,13 +9,29 @@ export default function SettingsIcon() {
     <TouchableOpacity
       style={{
         position: "absolute",
-        top: 42,
-        right: 25,
-        zIndex: 10, // Ensure it's above other elements
+        top: 35,
+        right: 0,
+        zIndex: 10,
+        padding: 15,
+        borderRadius: 20,
+        borderWidth: 2,
+        borderColor: '#333',
+        marginHorizontal: 20,
+        marginBottom: 0,
+        alignItems: 'center',
+        shadowColor: "#000",
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+        alignSelf: "center", // Ensure it's above other elements
       }}
       onPress={() => router.push("/settings")} // Navigate to the settings page
     >
-      <Ionicons name="settings-outline" size={32} color="white" />
+      <Ionicons name="settings-outline" size={24} color="white" />
     </TouchableOpacity>
   );
 }
